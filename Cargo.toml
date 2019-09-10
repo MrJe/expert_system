@@ -1,7 +1,15 @@
 [package]
 name = "expert_system"
 version = "0.1.0"
-authors = ["jmichaud <jmichaud@student.42.fr>"]
+authors = ["gpoblon <gpoblon@student.42.fr>", "jmichaud <jmichaud@student.42.fr>"]
 edition = "2018"
+
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bin"
+path = "src/bin/main.rs"
 
 [dependencies]
