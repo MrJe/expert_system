@@ -1,28 +1,35 @@
+mod file;
+mod rule;
+mod query;
+mod fact;
 #[cfg(test)]
-mod tests {
-	use super::*;
+mod tests;
 
-	fn useless_non_tested() {
-		assert_eq!(addition(8, 10).unwrap(), 18, "is addition result right");
-	}
+use std::fs::File;
+use std::io::Error;
+use std::io::prelude::*;
 
-	#[test]
-	fn is_addition_equal() {
-		useless_non_tested();
-	}
-
-	#[test]
-	#[should_panic]
-	fn is_addition_zero() {
-		assert_eq!(addition(-9, 9).is_err(), true, "addition should return an error");
-	}
+pub fn modules_checker() -> Result<bool, Error> { // just to try, don't use
+	let input_file = file::open("example_input.txt")?;
+	file::read(false)?;
+	file::parser()?;
+	file::print(&input_file)?;
+	let output_file = file::create("output_test.txt")?;
+	file::write(&output_file, "Here is our first file created in Rust !")?;
+	Ok(true)
 }
 
-pub fn addition(a: i8, b: i8) -> Result<i8,  i8> {
-	if a + b != 0 {
-		Ok(a + b)
-	} else {
-		println!("ERROR !");
-		Err(0)
-	}
+
+pub fn get_file(fname: &str) -> Result<(File, String), Error> {
+	let mut f = File::open(fname)?;
+	let mut contents = String::new();
+	f.read_to_string(&mut contents)?;
+	Ok((f, contents))
+}
+
+pub fn output_to_file(fname: &str) -> Result<bool, Error> {
+	let mut f = file::create(fname)?;
+	f.write_all(b"Here is our first file created in Rust !")?;
+	println!("The output result has been printed in the following file : {}", fname);
+	Ok(true)
 }
