@@ -9,7 +9,7 @@ name = "lib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "bin"
+name = "expert_system"
 path = "src/bin/main.rs"
 
 [dependencies]
