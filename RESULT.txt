@@ -1,1 +1,3 @@
-Here is our first file created in Rust !
+G = TRUE
+V = FALSE
+X = FALSE

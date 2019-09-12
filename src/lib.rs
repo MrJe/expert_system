@@ -1,5 +1,5 @@
 pub mod file;
-pub mod entities;
+pub mod parser;
 
 #[cfg(test)]
 mod tests;
