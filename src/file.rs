@@ -22,8 +22,9 @@ pub fn output_result(fname: &str, facts: &Facts) -> Result<File, Error> {
 	Ok(f)
 }
 
-pub fn	get_solved_facts(file: &File, facts: Facts) -> Result<Facts, Error> {
+pub fn	get_solved_facts(file: &File) -> Result<Facts, Error> {
 	let reader = BufReader::new(file);
+	let mut facts = Facts::new();
 	let mut solver = Solver::new();
 	for line in reader.lines() {
 		let line = line.unwrap();

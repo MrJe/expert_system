@@ -3,8 +3,8 @@ fn main() {
 	if args.len() == 2 {
 		println!("{}", &args[1]);
 		let f = std::fs::File::open(&args[1]).unwrap();
-		let mut facts = lib::parser::Facts::new();
-		let facts = lib::file::get_solved_facts(&f, facts).unwrap();
+		// let mut facts = lib::parser::Facts::new();
+		let facts = lib::file::get_solved_facts(&f).unwrap();
 		facts.print('A');
 		facts.print('B');
 		facts.print('C');
