@@ -1,16 +1,16 @@
-#[derive(Copy, Clone, Debug)]
+use std::cell::Cell;
+
+#[derive(Clone, Debug)]
 pub struct Fact {
-	pub state: bool,
-	pub queried: bool,
-	pub is_initial: bool
+	pub state: Cell<bool>,
+	pub queried: Cell<bool>,
 }
 
 impl Fact {
 	pub fn	new() -> Fact {
 		Fact {
-			state: false,
-			queried: false,
-			is_initial: false,
+			state: Cell::new(false),
+			queried: Cell::new(false),
 		}
 	}
 }
@@ -22,19 +22,16 @@ pub struct Facts {
 
 impl Facts {
 	pub fn new() -> Facts {
+		let arr = [Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new(), Fact::new()];
+
 		Facts {
-			fact_arr: [ Fact::new() ; 26 ],
+			fact_arr: arr,
 			is_stable: false,
 		}
 	}
 
-	pub fn get(&self, letter: char) -> Fact {
-		self.fact_arr[self.get_index(letter)]
-	}
-
-	pub fn set(&mut self, letter: char, attr: &str, value: bool) {
-		let index = self.get_index(letter);
-		*self.set_value(attr, index) = value;
+	pub fn get(&self, letter: char) -> &Fact {
+		&self.fact_arr[self.get_index(letter)]
 	}
 
 	pub fn set_initial_facts(&mut self, line: &str) {
@@ -43,8 +40,7 @@ impl Facts {
 				break;
 			}
 			if c.is_uppercase() {
-				self.fact_arr[self.get_index(c)].is_initial = true;
-				self.fact_arr[self.get_index(c)].state = true;
+				self.fact_arr[self.get_index(c)].state.set(true);
 			}
 		}
 	}
@@ -55,22 +51,22 @@ impl Facts {
 				break;
 			}
 			if c.is_uppercase() {
-				self.fact_arr[self.get_index(c)].queried = true;
+				self.fact_arr[self.get_index(c)].queried.set(true);
 			}
 		}
 	}
 
 	pub fn print(&self, letter: char) {
 		let index = self.get_index(letter);
-		let res = self.fact_arr[index];
+		let res = &self.fact_arr[index];
 		println!("print parser element : {} (index {}) =>\n{:?}", letter, index, res);
 	}
 
-	fn set_value(&mut self, attr: &str, index: usize) -> &mut bool {
+	fn set_value(&mut self, attr: &str, index: usize, value: bool) {
+		let fact = &self.fact_arr[index];
 		match attr {
-			"state"			=> return &mut(self.fact_arr[index].state),
-			"queried"		=> return &mut(self.fact_arr[index].queried),
-			"is_initial"	=> return &mut(self.fact_arr[index].is_initial),
+			"state"			=> fact.state.set(value),
+			"queried"		=> fact.queried.set(value),
 			_				=> panic!("[{}] Attribute does not exist", attr),
 		}
 	}

@@ -9,29 +9,26 @@ pub enum	Operand {
 	Not,
 }
 
-pub struct	Token {
-	pub operand: Option<Operand>,
-	pub fact: Option<Fact>,
+pub struct	Token<'a> {
+	operand: Option<Operand>,
+	fact: Option<&'a Fact>,
 }
 
-impl Token {
-	pub fn	new(operand: Option<Operand>, fact: Option<Fact>) -> Token {
-		Token {
-			operand,
-			fact,
-		}
+impl Token<'_> {
+	fn	new(operand: Option<Operand>, fact: Option<&Fact>) -> Token {
+		Token { operand, fact }
 	}
 }
 
-pub struct	Rule {
-	pub token_v: Vec<Token>,
+pub struct	Rule<'a> {
+	pub token_v: Vec<Token<'a>>,
 	// pub lhr: Vec<Token>,
 	// pub rhs: Vec<Token>, // &mut Fact -> Vec bc of XOR in ccl
 	// pub is_biconditional: bool,
 }
 
-impl Rule {
-	pub fn	new() -> Rule {
+impl<'a> Rule<'a> {
+	pub fn	new() -> Rule<'a> {
 		Rule {
 			token_v: Vec::new(),
 			// lhs: Vec::new(),
@@ -40,34 +37,30 @@ impl Rule {
 		}
 	}
 
-	pub fn	push(&mut self, operand: Option<Operand>, fact: Option<Fact>) {
+	pub fn	push(&mut self, operand: Option<Operand>, fact: Option<&'a Fact>) {
 		self.token_v.push(Token::new(operand, fact));
 	}
 
 	pub fn	print(&self) {
 		println!("Rule:");
 		for token in &self.token_v {
-			println!("\tOperand : {:?}, fact: {:?}", token.operand, token.fact);
+			println!("\tToken: operand {:?}, fact: {:?}", token.operand, token.fact);
 		}
 	}
 }
 
-pub struct	Solver {
-	pub rule_v:		Vec<Rule>,
+pub struct	Solver<'a> {
+	pub rule_v:		Vec<Rule<'a>>,
 	pub facts:		Facts
 }
 
-impl Solver {
-	pub fn	new() -> Solver {
+impl<'a> Solver<'a> {
+	pub fn	new() -> Solver<'a> {
 		Solver {
 			rule_v: Vec::new(),
 			facts: Facts::new(),
 		}
 	}
-
-	pub fn	iterate_solved(&self) {}
-	pub fn	rule_tokenizer(&self) {}
-	pub fn	rule_solver(&self) {}
 
 	pub fn set_rule(&mut self, line: &str) {
 		let mut rule = Rule::new();
@@ -75,23 +68,23 @@ impl Solver {
 			if c.is_whitespace() {
 				continue;
 			} else if c.is_uppercase() {
-				rule.push(None, Some(self.facts.get(c)));
+				rule.push(None, Some(self.facts.get(c))); // ISSUE HERE
 			}
 			else {
 				match c {
-					'!'					=> rule.push(Some(Operand::Not), None),
-					'|'					=> rule.push(Some(Operand::Or), None),
-					'^'					=> rule.push(Some(Operand::Xor), None),
-					'+'					=> rule.push(Some(Operand::And), None),
-					'#'					=> break,
-					_					=> continue,
+					'!'	=> rule.push(Some(Operand::Not), None),
+					'|'	=> rule.push(Some(Operand::Or), None),
+					'^'	=> rule.push(Some(Operand::Xor), None),
+					'+'	=> rule.push(Some(Operand::And), None),
+					'#'	=> break,
+					_	=> continue,
 				}
 			}
 		}
 		self.rule_v.push(rule);
 	}
 
-	pub fn	rules_printer(&self) {
+	pub fn	print(&self) {
 		println!("PRINTING RULES");
 		for rule in &self.rule_v {
 			rule.print();
