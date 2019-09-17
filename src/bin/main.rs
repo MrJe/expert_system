@@ -11,7 +11,7 @@ fn main() {
 		solver.facts.print('V');
 		solver.facts.print('X');
 		solver.rules_printer();
-		let _res = lib::file::output_result("RESULT.txt", &(solver.facts));
+		// let _res = lib::file::output_result("RESULT.txt", &(solver.facts));
 	}
 	else {
 		println!("Usage: only 2 parameters !");

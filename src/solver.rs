@@ -9,13 +9,13 @@ pub enum	Operand {
 	Not,
 }
 
-pub struct	Token<'a> {
+pub struct	Token {
 	pub operand: Option<Operand>,
-	pub fact: Option<&'a Fact>,
+	pub fact: Option<Fact>,
 }
 
-impl<'a> Token<'a> {
-	pub fn	new(operand: Option<Operand>, fact: Option<&'a Fact>) -> Token<'a> {
+impl Token {
+	pub fn	new(operand: Option<Operand>, fact: Option<Fact>) -> Token {
 		Token {
 			operand,
 			fact,
@@ -23,15 +23,15 @@ impl<'a> Token<'a> {
 	}
 }
 
-pub struct	Rule<'a> {
-	pub token_v: Vec<Token<'a>>,
+pub struct	Rule {
+	pub token_v: Vec<Token>,
 	// pub lhr: Vec<Token>,
 	// pub rhs: Vec<Token>, // &mut Fact -> Vec bc of XOR in ccl
 	// pub is_biconditional: bool,
 }
 
-impl<'a> Rule<'a> {
-	pub fn	new() -> Rule<'a> {
+impl Rule {
+	pub fn	new() -> Rule {
 		Rule {
 			token_v: Vec::new(),
 			// lhs: Vec::new(),
@@ -40,7 +40,7 @@ impl<'a> Rule<'a> {
 		}
 	}
 
-	pub fn	push(&mut self, operand: Option<Operand>, fact: Option<&'a Fact>) {
+	pub fn	push(&mut self, operand: Option<Operand>, fact: Option<Fact>) {
 		self.token_v.push(Token::new(operand, fact));
 	}
 
@@ -52,17 +52,15 @@ impl<'a> Rule<'a> {
 	}
 }
 
-pub struct	Solver<'a> {
-	pub rule_v:		Vec<Rule<'a>>,
-	pub cur_rule:	Option<&'a mut Rule<'a>>,
+pub struct	Solver {
+	pub rule_v:		Vec<Rule>,
 	pub facts:		Facts
 }
 
-impl<'a> Solver<'a> {
-	pub fn	new() -> Solver<'a> {
+impl Solver {
+	pub fn	new() -> Solver {
 		Solver {
 			rule_v: Vec::new(),
-			cur_rule: None,
 			facts: Facts::new(),
 		}
 	}
@@ -71,14 +69,32 @@ impl<'a> Solver<'a> {
 	pub fn	rule_tokenizer(&self) {}
 	pub fn	rule_solver(&self) {}
 
+	pub fn set_rule(&mut self, line: &str) {
+		let mut rule = Rule::new();
+		for c in line.chars() {
+			if c.is_whitespace() {
+				continue;
+			} else if c.is_uppercase() {
+				rule.push(None, Some(self.facts.get(c)));
+			}
+			else {
+				match c {
+					'!'					=> rule.push(Some(Operand::Not), None),
+					'|'					=> rule.push(Some(Operand::Or), None),
+					'^'					=> rule.push(Some(Operand::Xor), None),
+					'+'					=> rule.push(Some(Operand::And), None),
+					'#'					=> break,
+					_					=> continue,
+				}
+			}
+		}
+		self.rule_v.push(rule);
+	}
+
 	pub fn	rules_printer(&self) {
 		println!("PRINTING RULES");
 		for rule in &self.rule_v {
 			rule.print();
 		}
-	}
-
-	pub fn	set_cur(&mut self, ref_rule: &'a mut Rule<'a>) {
-		self.cur_rule = Some(ref_rule);
 	}
 }

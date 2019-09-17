@@ -2,7 +2,7 @@ use crate::parser::Facts;
 use crate::solver::Solver;
 
 use std::fs::File;
-use std::io::{Error, BufReader, prelude::*}; // ErrorKind, 
+use std::io::{Error, ErrorKind, BufReader, prelude::*}; // ErrorKind, 
 
 pub fn output_result(fname: &str, facts: &Facts) -> Result<File, Error> {
 	let mut f = File::create(fname)?;
@@ -27,16 +27,15 @@ pub fn	parser(file: &File) -> Result<Solver, Error> {
 	let mut solver = Solver::new();
 	for line in reader.lines() {
 		let line = line.unwrap();
-		match line.chars().next() {
-			Some('=')	=> solver.facts.set_initial_facts(&line),
-			// Some('A')	=> solver.facts.set_rule(&line, &mut solver),
-			Some('?')	=> solver.facts.set_queries(&line),
-			// Some(c)		=> return Err(Error::new(ErrorKind::InvalidData, format!("Input file has a format error (char {})", c))),
-			_			=> continue,
+		match line.trim().chars().next() {
+			Some('A' ..= 'Z')	=> solver.set_rule(&line),
+			Some('=')			=> solver.facts.set_initial_facts(&line),
+			Some('?')			=> solver.facts.set_queries(&line),
+			Some('#')			=> continue,
+			None				=> continue,
+			_					=> return Err(Error::new(ErrorKind::InvalidData, format!("Input file has a format error (line {})", &line))),
 		};
 	}
 	println!("[file::parser]FILE PARSED\n");
-//	facts.get('V');
-//	facts.set('V', "query", true);
 	Ok(solver)
 }

@@ -1,5 +1,3 @@
-use crate::solver::{Operand, Rule, Solver};
-
 #[derive(Copy, Clone, Debug)]
 pub struct Fact {
 	pub state: bool,
@@ -30,35 +28,13 @@ impl Facts {
 		}
 	}
 
-	pub fn get(&self, letter: char) -> &Fact {
-		&(self.fact_arr[self.get_index(letter)])
+	pub fn get(&self, letter: char) -> Fact {
+		self.fact_arr[self.get_index(letter)]
 	}
 
 	pub fn set(&mut self, letter: char, attr: &str, value: bool) {
 		let index = self.get_index(letter);
 		*self.set_value(attr, index) = value;
-	}
-
-	pub fn set_rule<'a>(&'a mut self, line: &str, solver: &'a mut Solver<'a>) {
-		let mut rule = Rule::new();
-		for c in line.chars() {
-			if c.is_whitespace() {
-				continue;
-			} else if c.is_uppercase() {
-				rule.push(None, Some(self.get(c)));
-			}
-			else {
-				match c {
-					'!'					=> rule.push(Some(Operand::Not), None),
-					'|'					=> rule.push(Some(Operand::Or), None),
-					'^'					=> rule.push(Some(Operand::Xor), None),
-					'+'					=> rule.push(Some(Operand::And), None),
-					'#'					=> break,
-					_					=> continue,
-				}
-			}
-		}
-		solver.rule_v.push(rule);
 	}
 
 	pub fn set_initial_facts(&mut self, line: &str) {
