@@ -22,16 +22,15 @@ pub fn output_result(fname: &str, facts: &Facts) -> Result<File, Error> {
 	Ok(f)
 }
 
-pub fn	get_solved_facts(file: &File) -> Result<Facts, Error> {
+pub fn	parser(file: &File) -> Result<Solver, Error> {
 	let reader = BufReader::new(file);
-	let mut facts = Facts::new();
 	let mut solver = Solver::new();
 	for line in reader.lines() {
 		let line = line.unwrap();
 		match line.chars().next() {
-			Some('=')	=> facts.set_initial_facts(&line),
-			Some('A')	=> facts.set_rule(&line, &mut solver),
-			Some('?')	=> facts.set_queries(&line),
+			Some('=')	=> solver.facts.set_initial_facts(&line),
+			// Some('A')	=> solver.facts.set_rule(&line, &mut solver),
+			Some('?')	=> solver.facts.set_queries(&line),
 			// Some(c)		=> return Err(Error::new(ErrorKind::InvalidData, format!("Input file has a format error (char {})", c))),
 			_			=> continue,
 		};
@@ -39,5 +38,5 @@ pub fn	get_solved_facts(file: &File) -> Result<Facts, Error> {
 	println!("[file::parser]FILE PARSED\n");
 //	facts.get('V');
 //	facts.set('V', "query", true);
-	Ok(facts)
+	Ok(solver)
 }

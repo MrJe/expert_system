@@ -1,6 +1,7 @@
 // when there are priorities, just call smth like `rule_definer() -> bool` recursively 
-use crate::parser::Fact;
+use crate::parser::{Fact, Facts};
 
+#[derive(Copy, Clone, Debug)]
 pub enum	Operand {
 	And,
 	Or,
@@ -21,7 +22,6 @@ impl<'a> Token<'a> {
 		}
 	}
 }
-
 
 pub struct	Rule<'a> {
 	pub token_v: Vec<Token<'a>>,
@@ -44,14 +44,18 @@ impl<'a> Rule<'a> {
 		self.token_v.push(Token::new(operand, fact));
 	}
 
-	// pub fn	clean(&mut self) {
-	// 	self = None;
-	// }
+	pub fn	print(&self) {
+		println!("Rule:");
+		for token in &self.token_v {
+			println!("\tOperand : {:?}, fact: {:?}", token.operand, token.fact);
+		}
+	}
 }
 
 pub struct	Solver<'a> {
-	pub rule_v: Vec<Rule<'a>>,
-	pub cur_rule: Option<&'a mut Rule<'a>>,
+	pub rule_v:		Vec<Rule<'a>>,
+	pub cur_rule:	Option<&'a mut Rule<'a>>,
+	pub facts:		Facts
 }
 
 impl<'a> Solver<'a> {
@@ -59,6 +63,7 @@ impl<'a> Solver<'a> {
 		Solver {
 			rule_v: Vec::new(),
 			cur_rule: None,
+			facts: Facts::new(),
 		}
 	}
 
@@ -66,9 +71,12 @@ impl<'a> Solver<'a> {
 	pub fn	rule_tokenizer(&self) {}
 	pub fn	rule_solver(&self) {}
 
-	// pub fn	get_cur(&self) -> Option<&'a mut Rule> {
-	// 	self.cur_rule
-	// }
+	pub fn	rules_printer(&self) {
+		println!("PRINTING RULES");
+		for rule in &self.rule_v {
+			rule.print();
+		}
+	}
 
 	pub fn	set_cur(&mut self, ref_rule: &'a mut Rule<'a>) {
 		self.cur_rule = Some(ref_rule);

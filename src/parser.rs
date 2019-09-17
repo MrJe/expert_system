@@ -26,7 +26,7 @@ impl Facts {
 	pub fn new() -> Facts {
 		Facts {
 			fact_arr: [ Fact::new() ; 26 ],
-			is_stable: false
+			is_stable: false,
 		}
 	}
 
