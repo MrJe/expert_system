@@ -1,62 +1,16 @@
-// when there are priorities, just call smth like `rule_definer() -> bool` recursively 
-use crate::parser::{Fact, Facts};
+pub mod rule;
 
-#[derive(Copy, Clone, Debug)]
-pub enum	Operand {
-	And,
-	Or,
-	Xor,
-	Not,
-}
-
-pub struct	Token<'a> {
-	operand: Option<Operand>,
-	pub fact: Option<&'a Fact>,
-}
-
-impl Token<'_> {
-	fn	new(operand: Option<Operand>, fact: Option<&Fact>) -> Token {
-		Token { operand, fact }
-	}
-}
-
-pub struct	Rule<'a> {
-	pub token_v: Vec<Token<'a>>,
-	// pub lhr: Vec<Token>,
-	// pub rhs: Vec<Token>, // &mut Fact -> Vec bc of XOR in ccl
-	// pub is_biconditional: bool,
-}
-
-impl<'a> Rule<'a> {
-	pub fn	new() -> Rule<'a> {
-		Rule {
-			token_v: Vec::new(),
-			// lhs: Vec::new(),
-			// rhs: Vec::new(),
-			// is_biconditional: false,
-		}
-	}
-
-	pub fn	push(&mut self, operand: Option<Operand>, fact: Option<&'a Fact>) {
-		self.token_v.push(Token::new(operand, fact));
-	}
-
-	pub fn	print(&self) {
-		println!("Rule:");
-		for token in &self.token_v {
-			println!("\tToken: operand {:?}, fact: {:?}", token.operand, token.fact);
-		}
-	}
-}
+use rule::{Rule, token::Operand};
+use crate::parser::Facts;
 
 pub struct	Solver<'a> {
-	pub rule_v:		Vec<Rule<'a>>,
+	pub rules:	Vec<Rule<'a>>,
 }
 
 impl<'a> Solver<'a> {
 	pub fn	new() -> Solver<'a> {
 		Solver {
-			rule_v: Vec::new(),
+			rules: Vec::new(),
 		}
 	}
 
@@ -79,12 +33,12 @@ impl<'a> Solver<'a> {
 				}
 			}
 		}
-		self.rule_v.push(rule);
+		self.rules.push(rule);
 	}
 
 	pub fn	print(&self) {
 		println!("PRINTING RULES");
-		for rule in &self.rule_v {
+		for rule in &self.rules {
 			rule.print();
 		}
 	}
