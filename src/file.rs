@@ -38,6 +38,6 @@ pub fn	parser(file: &File) -> Result<Facts, Error> {
 	}
 	println!("[file::parser]FILE PARSED\n");
 	// TEST THAT IT ALL WORKS -> OK
-	// solver.rule_v[0].token_v[0].fact.unwrap().state.set(true);
+	// solver.rules[0].tokens[0].fact.unwrap().state.set(true);
 	Ok(facts)
 }

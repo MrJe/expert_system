@@ -1,4 +1,4 @@
-pub mod rule;
+mod rule;
 
 use rule::{Rule, token::Operand};
 use crate::parser::Facts;
