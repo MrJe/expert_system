@@ -2,7 +2,7 @@ use crate::parser::Facts;
 use crate::solver::Solver;
 
 use std::fs::File;
-use std::io::{Error, ErrorKind, BufReader, prelude::*}; // ErrorKind, 
+use std::io::{Error, ErrorKind, BufReader, prelude::*};
 
 pub fn output_result(fname: &str, facts: &Facts) -> Result<File, Error> {
 	let mut f = File::create(fname)?;
@@ -29,7 +29,7 @@ pub fn	parser(file: &File) -> Result<Facts, Error> {
 	for line in reader.lines() {
 		let line = line.unwrap();
 		match line.trim().chars().next() {
-			Some('A' ..= 'Z') | Some('(')	=> solver.set_rule(&facts, &line),
+			Some('A' ..= 'Z') | Some('(')	=> solver.set_rule(&facts, &line)?,
 			Some('=')						=> facts.set_initial_facts(&line),
 			Some('?')						=> facts.set_queries(&line),
 			Some('#') | None				=> continue,
@@ -38,6 +38,7 @@ pub fn	parser(file: &File) -> Result<Facts, Error> {
 	}
 	println!("[file::parser]FILE PARSED\n");
 	// TEST THAT IT ALL WORKS -> OK
-	// solver.rules[0].tokens[0].fact.unwrap().state.set(true);
+	// solver.rules[0].lhs[0].set_state(true);
+	solver.print();
 	Ok(facts)
 }

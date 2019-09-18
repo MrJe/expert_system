@@ -7,9 +7,6 @@ fn expert_system(file: File) {
 	facts.print('A');
 	facts.print('B');
 	facts.print('C');
-	facts.print('V');
-	facts.print('X');
-	// solver.rules_printer();
 	// let _res = lib::file::output_result("RESULT.txt", &facts);
 }
 
