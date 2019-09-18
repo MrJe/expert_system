@@ -3,15 +3,14 @@ use std::fs::File;
 
 fn expert_system(file: File) {
 	println!("expert_system() launched !");
-	let solver = lib::file::parser(&file).unwrap();
-	solver.facts.print('A');
-	solver.facts.print('B');
-	solver.facts.print('C');
-	solver.facts.print('V');
-	solver.facts.print('X');
-	solver.rules_printer();
-	// let _res = lib::file::output_result("RESULT.txt", &(solver.facts));
-
+	let facts = lib::file::parser(&file).unwrap();
+	facts.print('A');
+	facts.print('B');
+	facts.print('C');
+	facts.print('V');
+	facts.print('X');
+	// solver.rules_printer();
+	// let _res = lib::file::output_result("RESULT.txt", &facts);
 }
 
 fn main() {

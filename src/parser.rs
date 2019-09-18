@@ -1,12 +1,12 @@
 use std::cell::Cell;
 
 #[derive(Clone, Debug)]
-pub struct Fact {
+pub struct Fact{
 	pub state: Cell<bool>,
 	pub queried: Cell<bool>,
 }
 
-impl Fact {
+impl	Fact {
 	pub fn	new() -> Fact {
 		Fact {
 			state: Cell::new(false),
@@ -34,7 +34,7 @@ impl Facts {
 		&self.fact_arr[self.get_index(letter)]
 	}
 
-	pub fn set_initial_facts(&mut self, line: &str) {
+	pub fn set_initial_facts(&self, line: &str) {
 		for c in line.chars() {
 			if c == '#' {
 				break;
@@ -45,7 +45,7 @@ impl Facts {
 		}
 	}
 
-	pub fn set_queries(&mut self, line: &str) {
+	pub fn set_queries(&self, line: &str) {
 		for c in line.chars() {
 			if c == '#' {
 				break;
@@ -62,14 +62,14 @@ impl Facts {
 		println!("print parser element : {} (index {}) =>\n{:?}", letter, index, res);
 	}
 
-	fn set_value(&mut self, attr: &str, index: usize, value: bool) {
-		let fact = &self.fact_arr[index];
-		match attr {
-			"state"			=> fact.state.set(value),
-			"queried"		=> fact.queried.set(value),
-			_				=> panic!("[{}] Attribute does not exist", attr),
-		}
-	}
+	// fn set_value(&mut self, attr: &str, index: usize, value: bool) {
+	// 	let fact = &self.fact_arr[index];
+	// 	match attr {
+	// 		"state"			=> fact.state.set(value),
+	// 		"queried"		=> fact.queried.set(value),
+	// 		_				=> panic!("[{}] Attribute does not exist", attr),
+	// 	}
+	// }
 
 	fn get_index(&self, letter: char) -> usize {
 		if letter.is_uppercase() {

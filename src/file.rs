@@ -22,19 +22,22 @@ pub fn output_result(fname: &str, facts: &Facts) -> Result<File, Error> {
 	Ok(f)
 }
 
-pub fn	parser(file: &File) -> Result<Solver, Error> {
+pub fn	parser(file: &File) -> Result<Facts, Error> {
 	let reader = BufReader::new(file);
+	let facts = Facts::new();
 	let mut solver = Solver::new();
 	for line in reader.lines() {
 		let line = line.unwrap();
 		match line.trim().chars().next() {
-			Some('A' ..= 'Z') | Some('(')	=> solver.set_rule(&line),
-			Some('=')						=> solver.facts.set_initial_facts(&line),
-			Some('?')						=> solver.facts.set_queries(&line),
+			Some('A' ..= 'Z') | Some('(')	=> solver.set_rule(&facts, &line),
+			Some('=')						=> facts.set_initial_facts(&line),
+			Some('?')						=> facts.set_queries(&line),
 			Some('#') | None				=> continue,
 			_								=> return Err(Error::new(ErrorKind::InvalidData, format!("Input file has a format error (line {})", &line))),
 		};
 	}
 	println!("[file::parser]FILE PARSED\n");
-	Ok(solver)
+	// TEST THAT IT ALL WORKS -> OK
+	// solver.rule_v[0].token_v[0].fact.unwrap().state.set(true);
+	Ok(facts)
 }

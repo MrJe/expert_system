@@ -11,7 +11,7 @@ pub enum	Operand {
 
 pub struct	Token<'a> {
 	operand: Option<Operand>,
-	fact: Option<&'a Fact>,
+	pub fact: Option<&'a Fact>,
 }
 
 impl Token<'_> {
@@ -51,24 +51,22 @@ impl<'a> Rule<'a> {
 
 pub struct	Solver<'a> {
 	pub rule_v:		Vec<Rule<'a>>,
-	pub facts:		Facts
 }
 
 impl<'a> Solver<'a> {
 	pub fn	new() -> Solver<'a> {
 		Solver {
 			rule_v: Vec::new(),
-			facts: Facts::new(),
 		}
 	}
 
-	pub fn set_rule(&mut self, line: &str) {
+	pub fn set_rule(&mut self, facts: &'a Facts, line: &str) {
 		let mut rule = Rule::new();
 		for c in line.chars() {
 			if c.is_whitespace() {
 				continue;
 			} else if c.is_uppercase() {
-				rule.push(None, Some(self.facts.get(c))); // ISSUE HERE
+				rule.push(None, Some(facts.get(c)));
 			}
 			else {
 				match c {
