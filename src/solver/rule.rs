@@ -47,5 +47,11 @@ impl<'a> Rule<'a> {
 		}
 	}
 
+	// pub fn	apply_rpn(&mut self) {
+	// 	for elem in &self.lhs {
+			
+	// 	}
+	// }
+
 	// pub fn	compute(&self) -> bool {}
 }
