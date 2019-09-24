@@ -1,3 +1,0 @@
-G = TRUE
-V = FALSE
-X = FALSE
