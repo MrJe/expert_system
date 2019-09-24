@@ -62,15 +62,6 @@ impl Facts {
 		println!("print parser element : {} (index {}) =>\n{:?}", letter, index, res);
 	}
 
-	// fn set_value(&mut self, attr: &str, index: usize, value: bool) {
-	// 	let fact = &self.fact_arr[index];
-	// 	match attr {
-	// 		"state"			=> fact.state.set(value),
-	// 		"queried"		=> fact.queried.set(value),
-	// 		_				=> panic!("[{}] Attribute does not exist", attr),
-	// 	}
-	// }
-
 	fn get_index(&self, letter: char) -> usize {
 		if letter.is_uppercase() {
 			letter as usize - 65

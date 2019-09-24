@@ -1,4 +1,3 @@
-pub mod file;
 pub mod parser;
 pub mod solver;
 

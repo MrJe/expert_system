@@ -2,10 +2,12 @@ use crate::parser::Fact;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum	Operand {
-	And,
-	Or,
-	Xor,
 	Not,
+	And,
+	Xor,
+	Or,
+	Opening,
+	Closing,
 }
 
 pub struct	Token<'a> {

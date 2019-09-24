@@ -4,12 +4,12 @@ use std::io::{Error, ErrorKind};
 use rule::{Rule, Side, token::Operand};
 use crate::parser::Facts;
 
-pub struct	Solver<'a> {
-	pub rules:	Vec<Rule<'a>>,
+pub struct	Solver<'solver> {
+	pub rules:	Vec<Rule<'solver>>,
 }
 
-impl<'a> Solver<'a> {
-	pub fn	new() -> Solver<'a> {
+impl<'solver> Solver<'solver> {
+	pub fn	new() -> Solver<'solver> {
 		Solver {
 			rules: Vec::new(),
 		}
@@ -29,7 +29,7 @@ impl<'a> Solver<'a> {
 		Ok(())
 	}
 
-	pub fn set_rule(&mut self, facts: &'a Facts, line: &str) -> Result<(), Error> {
+	pub fn set_rule(&mut self, facts: &'solver Facts, line: &str) -> Result<(), Error> {
 		let mut side = Side::Lhs;
 		let mut rule = Rule::new();
 		
@@ -48,6 +48,8 @@ impl<'a> Solver<'a> {
 			}
 			else {
 				match c {
+					'('	=> rule.push(&side, Some(Operand::Opening), None),
+					')'	=> rule.push(&side, Some(Operand::Closing), None),
 					'!'	=> rule.push(&side, Some(Operand::Not), None),
 					'|'	=> rule.push(&side, Some(Operand::Or), None),
 					'^'	=> rule.push(&side, Some(Operand::Xor), None),

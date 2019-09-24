@@ -46,12 +46,4 @@ impl<'a> Rule<'a> {
 			println!("\tToken: operand {:?}, fact: {:?}", token.operand, token.fact);
 		}
 	}
-
-	// pub fn	apply_rpn(&mut self) {
-	// 	for elem in &self.lhs {
-			
-	// 	}
-	// }
-
-	// pub fn	compute(&self) -> bool {}
 }
