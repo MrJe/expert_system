@@ -16,15 +16,19 @@ pub fn apply_on_vec<'rule>(tokens: &Vec<Token<'rule>>) -> Result<Vec<Token<'rule
         }
     }
     while tmp.is_empty() == false {
-        let last = *tmp.last().unwrap();
-        if last == Operand::Opening {
-            return Err(Error::new(
-                ErrorKind::InvalidData,
-                "Rpn: brackets do not match (closing missing)",
-            ));
+        if let Some(last) = tmp.last() {
+            if *last == Operand::Opening {
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "Rpn: brackets do not match (closing missing)",
+                ));
+            }
+            ret.push(Token::new(Some(*last), None));
+            tmp.pop();
         }
-        ret.push(Token::new(Some(last), None));
-        tmp.pop();
+        else {
+            panic!("apply_on_vec(): tmp contain invalid Operand");
+        }
     }
     Ok(ret)
 }
@@ -78,7 +82,10 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
             ));
         }
         unstack_to_opening(ret, tmp)?;
-    } else if op != Operand::Opening
+        Ok(())
+    }
+    // TODO: if let Some()...
+    if op != Operand::Opening
         && tmp.is_empty() == false
         && op_priority(op) > op_priority(*tmp.last().unwrap())
     {
