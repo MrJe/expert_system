@@ -31,17 +31,18 @@ fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Ruler<'a>, Error> {
     let reader = BufReader::new(file);
     let mut ruler = Ruler::new();
     for line in reader.lines() {
-        let line = line.unwrap();
-        match line.trim().chars().next() {
-            Some('A'..='Z') | Some('(') | Some('!') => ruler.set_rule(&facts, &line)?,
-            Some('=') => facts.set_initial_facts(&line)?,
-            Some('?') => facts.set_queries(&line)?,
-            Some('#') | None => continue,
-            _ => {
-                return Err(Error::new(
-                    ErrorKind::InvalidData,
-                    format!("Input file: unexpected char (line: {})", line),
-                ))
+        if let Ok(line) = line {
+            match line.trim().chars().next() {
+                Some('A'..='Z') | Some('(') | Some('!') => ruler.set_rule(&facts, &line)?,
+                Some('=') => facts.set_initial_facts(&line)?,
+                Some('?') => facts.set_queries(&line)?,
+                Some('#') | None => continue,
+                _ => {
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Input file: unexpected char (line: {})", line),
+                    ))
+                }
             }
         }
     }
@@ -52,6 +53,7 @@ fn solver(file: &File) -> Result<Facts, Error> {
     let facts = Facts::new();
     let mut ruler = parser(file, &facts)?;
     ruler.to_reverse_polish_notation()?;
+    ruler.print();
     // solve tree
     Ok(facts)
 }

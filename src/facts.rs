@@ -5,13 +5,15 @@ use std::io::{Error, ErrorKind};
 pub struct Fact {
     pub state: Cell<bool>,
     pub queried: Cell<bool>,
+    pub letter: char,
 }
 
 impl Fact {
-    pub fn new() -> Fact {
+    pub fn new(letter: char) -> Fact {
         Fact {
             state: Cell::new(false),
             queried: Cell::new(false),
+            letter,
         }
     }
 }
@@ -24,32 +26,32 @@ pub struct Facts {
 impl Facts {
     pub fn new() -> Facts {
         let arr = [
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
-            Fact::new(),
+            Fact::new('A'),
+            Fact::new('B'),
+            Fact::new('C'),
+            Fact::new('D'),
+            Fact::new('E'),
+            Fact::new('F'),
+            Fact::new('G'),
+            Fact::new('H'),
+            Fact::new('I'),
+            Fact::new('J'),
+            Fact::new('K'),
+            Fact::new('L'),
+            Fact::new('M'),
+            Fact::new('N'),
+            Fact::new('O'),
+            Fact::new('P'),
+            Fact::new('Q'),
+            Fact::new('R'),
+            Fact::new('S'),
+            Fact::new('T'),
+            Fact::new('U'),
+            Fact::new('V'),
+            Fact::new('W'),
+            Fact::new('X'),
+            Fact::new('Y'),
+            Fact::new('Z'),
         ];
 
         Facts {

@@ -44,19 +44,24 @@ impl<'rule> Rule<'rule> {
     }
 
     pub fn print(&self) {
-        println!("Rule: (LHS)");
         for token in &self.lhs {
-            println!(
-                "\tToken: operand {:?}, fact: {:?}",
-                token.operand, token.fact
-            );
+            if token.fact.is_some() {
+                print!("{} ", token.fact.unwrap().letter);
+            } else {
+                print!("{} ", token.get_op_char());
+            }
         }
-        println!("Implies (=> RHS) ; <=> : {}", self.is_equivalent);
+        match self.is_equivalent {
+            true => print!("<=> "),
+            false => print!("=> "),
+        }
         for token in &self.rhs {
-            println!(
-                "\tToken: operand {:?}, fact: {:?}",
-                token.operand, token.fact
-            );
+            if token.fact.is_some() {
+                print!("{} ", token.fact.unwrap().letter);
+            } else {
+                print!("{} ", token.get_op_char());
+            }
         }
+        print!("\n");
     }
 }

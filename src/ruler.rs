@@ -112,7 +112,7 @@ impl<'ruler> Ruler<'ruler> {
         Ok(())
     }
 
-    pub fn to_reverse_polish_notation(&'ruler mut self) -> Result<(), Error> {
+    pub fn to_reverse_polish_notation(&mut self) -> Result<(), Error> {
         for rule in self.rules.iter_mut() {
             rule.to_rpn()?;
         }

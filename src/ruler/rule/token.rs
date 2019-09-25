@@ -48,13 +48,16 @@ impl Token<'_> {
     }
 
     pub fn get_op_char(&self) -> char {
-        match self.operand.unwrap() {
-            Operand::Not => '!',
-            Operand::And => '+',
-            Operand::Xor => '^',
-            Operand::Or => '|',
-            Operand::Opening => '(',
-            Operand::Closing => ')',
+        if let Some(op) = self.operand {
+            return match op {
+                Operand::Not => '!',
+                Operand::And => '+',
+                Operand::Xor => '^',
+                Operand::Or => '|',
+                Operand::Opening => '(',
+                Operand::Closing => ')',
+            }
         }
+        '@'
     }
 }
