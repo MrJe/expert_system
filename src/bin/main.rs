@@ -51,7 +51,7 @@ fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Ruler<'a>, Error> {
 fn solver(file: &File) -> Result<Facts, Error> {
     let facts = Facts::new();
     let mut ruler = parser(file, &facts)?;
-    ruler.to_reverse_polish_notation();
+    ruler.to_reverse_polish_notation()?;
     // solve tree
     Ok(facts)
 }

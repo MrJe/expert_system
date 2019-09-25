@@ -1,8 +1,9 @@
 use super::token::{Operand, Token};
+use std::io::{Error, ErrorKind};
 
-pub fn apply_on_vec<'rule>(tokens: &Vec<Token<'rule>>) -> Vec<Token<'rule>> {
-    let mut ret : Vec<Token>    = Vec::new();
-    let mut tmp : Vec<Operand>  = Vec::new();
+pub fn apply_on_vec<'rule>(tokens: &Vec<Token<'rule>>) -> Result<Vec<Token<'rule>>, Error> {
+    let mut ret: Vec<Token> = Vec::new();
+    let mut tmp: Vec<Operand> = Vec::new();
 
     for token in tokens {
         if token.fact.is_some() {
@@ -10,44 +11,50 @@ pub fn apply_on_vec<'rule>(tokens: &Vec<Token<'rule>>) -> Vec<Token<'rule>> {
             continue;
         }
         match token.operand {
-            None        => panic!("Token without fact or operand."),
-            Some(op)    => sort_operand(&mut ret, &mut tmp, op),
+            None => panic!("Token without fact or operand."),
+            Some(op) => sort_operand(&mut ret, &mut tmp, op)?,
         }
     }
     while tmp.is_empty() == false {
         let last = *tmp.last().unwrap();
         if last == Operand::Opening {
-            println!("Error with (), too much '('");
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "Rpn: brackets do not match (closing missing)",
+            ));
         }
         ret.push(Token::new(Some(last), None));
         tmp.pop();
     }
-    ret
+    Ok(ret)
 }
 
-fn op_lvl(op: Operand) -> u8 {
+fn op_priority(op: Operand) -> u8 {
     match op {
         Operand::Not => 1,
         Operand::And => 2,
         Operand::Xor => 3,
-    	Operand::Or  => 4,
-        _            => 5,
+        Operand::Or => 4,
+        _ => 5,
     }
 }
 
-fn unstack_to_opening(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>) {
+fn unstack_to_opening(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>) -> Result<(), Error> {
     while tmp.is_empty() == false {
         let last = *tmp.last().unwrap();
         tmp.pop();
 
         if last == Operand::Opening {
             break;
-        }
-        else if tmp.is_empty() {
-            println!("Error with (), '(' is missing.")
+        } else if tmp.is_empty() {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "Rpn: brackets do not match (opening missing)",
+            ));
         }
         ret.push(Token::new(Some(last), None));
     }
+	Ok(())
 }
 
 fn unstack_with_lvl(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
@@ -56,26 +63,29 @@ fn unstack_with_lvl(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
         tmp.pop();
 
         ret.push(Token::new(Some(last), None));
-        if tmp.is_empty() == false
-            && op_lvl(op) <= op_lvl(*tmp.last().unwrap()) {
+        if tmp.is_empty() == false && op_priority(op) <= op_priority(*tmp.last().unwrap()) {
             break;
         }
     }
 }
 
-fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
+fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Result<(), Error> {
     if op == Operand::Closing {
         if tmp.is_empty() {
-            println!("Error with (), ')' without '('")
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "Rpn: brackets do not match (opening missing)",
+            ));
         }
-        unstack_to_opening(ret, tmp);
-    }
-    else if op != Operand::Opening && tmp.is_empty() == false &&
-            op_lvl(op) > op_lvl(*tmp.last().unwrap()) {
+        unstack_to_opening(ret, tmp)?;
+    } else if op != Operand::Opening
+        && tmp.is_empty() == false
+        && op_priority(op) > op_priority(*tmp.last().unwrap())
+    {
         unstack_with_lvl(ret, tmp, op);
         tmp.push(op.clone());
-    }
-    else {
+    } else {
         tmp.push(op.clone());
     }
+	Ok(())
 }

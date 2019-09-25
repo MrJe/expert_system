@@ -3,6 +3,7 @@ pub mod token;
 
 use crate::facts::Fact;
 use token::{Operand, Token};
+use std::io::Error;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Side {
@@ -28,9 +29,10 @@ impl<'rule> Rule<'rule> {
         }
     }
 
-    pub fn to_rpn(&mut self) {
-        self.lhs = rpn::apply_on_vec(&self.lhs);
-        self.rhs = rpn::apply_on_vec(&self.rhs);
+    pub fn to_rpn(&mut self) -> Result<(), Error> {
+        self.lhs = rpn::apply_on_vec(&self.lhs)?;
+        self.rhs = rpn::apply_on_vec(&self.rhs)?;
+        Ok(())
     }
 
     pub fn push(&mut self, side: &Side, operand: Option<Operand>, fact: Option<&'rule Fact>) {
