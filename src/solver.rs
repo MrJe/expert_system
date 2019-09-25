@@ -41,23 +41,20 @@ impl<'solver> Solver<'solver> {
         Ok(())
     }
 
-    fn rule_composition_checker(tokens: &Vec<Token>) -> Result<(), Error> {
+    fn rule_composition_checker(tokens: &Vec<Token>, line: &str) -> Result<(), Error> {
         let mut last = &Token::new(None, None);
         for token in tokens {
-            if last.is_empty() {
+            if !last.is_empty() {
+                if token.is_fact() && last.is_fact() {
+                    return Err(Error::new(ErrorKind::InvalidData, format!("Rules: contiguous facts (at {})", line)))
+                }
+                if token.is_operand() && !token.is_cumulable() && last.is_operand() {
+                    return Err(Error::new(ErrorKind::InvalidData, format!("Rules: contiguous operands (at {})", line)))
+                }
+            }
+            if !token.is_cumulable() {
                 last = token;
-                continue;
             }
-            if token.is_fact() && last.is_fact() {
-                return Err(Error::new(ErrorKind::InvalidData, "Rules: contiguous facts"))
-            }
-            if token.is_operand() && last.is_operand() && !token.is_not() {
-                return Err(Error::new(ErrorKind::InvalidData, "Rules: contiguous operands"))
-            }
-            if token.is_not() && last.is_not() {
-                return Err(Error::new(ErrorKind::InvalidData, "Rules: contiguous Not operands"))
-            }
-            last = token;
         }
         Ok(())
     }
@@ -88,15 +85,15 @@ impl<'solver> Solver<'solver> {
                     '+' => rule.push(&side, Some(Operand::And), None),
                     '#' => break,
                     '<' | '=' => Solver::impliance_checker(&mut side, &c)?,
-                    _ => return Err(Error::new(ErrorKind::InvalidData, "Rules: unexpected char")),
+                    _ => return Err(Error::new(ErrorKind::InvalidData, format!("Rules: unexpected char (at {})", line))),
                 };
             }
         }
         if side != Side::Rhs {
-            return Err(Error::new(ErrorKind::InvalidData, "Rules: no impliance"));
+            return Err(Error::new(ErrorKind::InvalidData, format!("Rules: no impliance (at {})", line)));
         }
-        Solver::rule_composition_checker(&rule.lhs)?;
-        Solver::rule_composition_checker(&rule.rhs)?;
+        Solver::rule_composition_checker(&rule.lhs, line)?;
+        Solver::rule_composition_checker(&rule.rhs, line)?;
         self.rules.push(rule);
         Ok(())
     }

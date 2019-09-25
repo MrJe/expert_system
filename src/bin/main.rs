@@ -40,7 +40,7 @@ fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Solver<'a>, Error> {
             _ => {
                 return Err(Error::new(
                     ErrorKind::InvalidData,
-                    format!("Input file has a format error (line {})", &line),
+                    format!("Input file: unexpected char (line: {})", line),
                 ))
             }
         }
@@ -55,26 +55,10 @@ fn solver(file: &File) -> Result<Facts, Error> {
     Ok(facts)
 }
 
-fn expert_system(file: File) {
-    let solved_facts: Facts = match solver(&file) {
-        Ok(value) => value,
-        Err(e) => {
-            println!("{}", e);
-            let fact: Facts = Facts::new();
-            dbg!(e);
-            fact
-        }
-    };
-    match print_solved_to_file(OUTPUT_FILE, solved_facts) {
-        Ok(()) => println!(
-            "Expert system worked as expected, open {} to see the results!",
-            OUTPUT_FILE
-        ),
-        Err(error) => println!(
-            "Oops, something went wrong, shutting program down.\n Error: {}",
-            error
-        ),
-    }
+fn expert_system(file: File) -> Result<(), Error> {
+    let solved_facts: Facts = solver(&file)?;
+    print_solved_to_file(OUTPUT_FILE, solved_facts)?;
+    Ok(())
 }
 
 fn main() {
@@ -85,8 +69,19 @@ fn main() {
     } else {
         let filename = &args[1];
         match File::open(filename) {
-            Ok(file) => expert_system(file),
-            Err(error) => println!("open: {}: {}", filename, error),
+            Ok(file) => {
+                match expert_system(file) {
+                    Ok(()) => println!(
+                        "Expert system worked as expected, open {} to see the results!",
+                        OUTPUT_FILE
+                    ),
+                    Err(error) => println!(
+                        "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
+                        error
+                    ),
+                }
+            }
+            Err(error) => println!("open: {}: {:#?}", filename, error),
         };
     }
 }

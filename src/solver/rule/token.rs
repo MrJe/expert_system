@@ -33,8 +33,11 @@ impl Token<'_> {
         self.operand.is_some()
     }
 
-    pub fn is_not(&self) -> bool {
-        self.operand.is_some() && (self.operand.unwrap() == Operand::Not)
+    pub fn is_cumulable(&self) -> bool {
+        if let Some(op) = self.operand {
+            return op == Operand::Not || op == Operand::Opening || op == Operand::Closing
+        }
+        false
     }
 
     pub fn set_state(&self, new_state: bool) {
