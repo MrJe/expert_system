@@ -1,7 +1,7 @@
 const OUTPUT_FILE: &str = "RESULT.txt";
 
-use lib::parser::Facts;
-use lib::solver::Solver;
+use lib::facts::Facts;
+use lib::ruler::Ruler;
 
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
@@ -27,13 +27,13 @@ fn print_solved_to_file(fname: &str, facts: Facts) -> Result<(), Error> {
     Ok(())
 }
 
-fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Solver<'a>, Error> {
+fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Ruler<'a>, Error> {
     let reader = BufReader::new(file);
-    let mut solver = Solver::new();
+    let mut ruler = Ruler::new();
     for line in reader.lines() {
         let line = line.unwrap();
         match line.trim().chars().next() {
-            Some('A'..='Z') | Some('(') | Some('!') => solver.set_rule(&facts, &line)?,
+            Some('A'..='Z') | Some('(') | Some('!') => ruler.set_rule(&facts, &line)?,
             Some('=') => facts.set_initial_facts(&line)?,
             Some('?') => facts.set_queries(&line)?,
             Some('#') | None => continue,
@@ -45,13 +45,14 @@ fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Solver<'a>, Error> {
             }
         }
     }
-    Ok(solver)
+    Ok(ruler)
 }
 
 fn solver(file: &File) -> Result<Facts, Error> {
     let facts = Facts::new();
-    let mut _solver = parser(file, &facts)?;
-    // solver.to_rpn(); TODO HERE
+    let mut ruler = parser(file, &facts)?;
+    ruler.to_reverse_polish_notation();
+    // solve tree
     Ok(facts)
 }
 
@@ -69,18 +70,16 @@ fn main() {
     } else {
         let filename = &args[1];
         match File::open(filename) {
-            Ok(file) => {
-                match expert_system(file) {
-                    Ok(()) => println!(
-                        "Expert system worked as expected, open {} to see the results!",
-                        OUTPUT_FILE
-                    ),
-                    Err(error) => println!(
-                        "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
-                        error
-                    ),
-                }
-            }
+            Ok(file) => match expert_system(file) {
+                Ok(()) => println!(
+                    "Expert system worked as expected, open {} to see the results!",
+                    OUTPUT_FILE
+                ),
+                Err(error) => println!(
+                    "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
+                    error
+                ),
+            },
             Err(error) => println!("open: {}: {:#?}", filename, error),
         };
     }

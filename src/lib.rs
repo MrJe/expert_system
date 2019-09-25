@@ -1,5 +1,5 @@
-pub mod parser;
-pub mod solver;
+pub mod facts;
+pub mod ruler;
 
 #[cfg(test)]
 mod tests;

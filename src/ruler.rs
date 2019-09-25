@@ -1,16 +1,16 @@
 mod rule;
 
-use crate::parser::Facts;
+use crate::facts::Facts;
 use rule::{token::Operand, token::Token, Rule, Side};
 use std::io::{Error, ErrorKind};
 
-pub struct Solver<'solver> {
-    pub rules: Vec<Rule<'solver>>,
+pub struct Ruler<'ruler> {
+    pub rules: Vec<Rule<'ruler>>,
 }
 
-impl<'solver> Solver<'solver> {
-    pub fn new() -> Solver<'solver> {
-        Solver { rules: Vec::new() }
+impl<'ruler> Ruler<'ruler> {
+    pub fn new() -> Ruler<'ruler> {
+        Ruler { rules: Vec::new() }
     }
 
     fn impliance_checker(side: &mut Side, &c: &char) -> Result<(), Error> {
@@ -18,7 +18,7 @@ impl<'solver> Solver<'solver> {
             return Err(Error::new(
                 ErrorKind::InvalidData,
                 "Rules: <, =, or > oversupplied",
-            ))
+            ));
         }
         let side_cpy: Side = *side;
         match c {
@@ -46,10 +46,16 @@ impl<'solver> Solver<'solver> {
         for token in tokens {
             if !last.is_empty() {
                 if token.is_fact() && last.is_fact() {
-                    return Err(Error::new(ErrorKind::InvalidData, format!("Rules: contiguous facts (at {})", line)))
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Rules: contiguous facts (at {})", line),
+                    ));
                 }
                 if token.is_operand() && !token.is_cumulable() && last.is_operand() {
-                    return Err(Error::new(ErrorKind::InvalidData, format!("Rules: contiguous operands (at {})", line)))
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        format!("Rules: contiguous operands (at {})", line),
+                    ));
                 }
             }
             if !token.is_cumulable() {
@@ -59,7 +65,7 @@ impl<'solver> Solver<'solver> {
         Ok(())
     }
 
-    pub fn set_rule(&mut self, facts: &'solver Facts, line: &str) -> Result<(), Error> {
+    pub fn set_rule(&mut self, facts: &'ruler Facts, line: &str) -> Result<(), Error> {
         let mut side = Side::Lhs;
         let mut rule = Rule::new();
 
@@ -68,7 +74,7 @@ impl<'solver> Solver<'solver> {
                 if side == Side::Bidirectional {
                     rule.is_equivalent = true;
                 }
-                Solver::impliance_checker(&mut side, &c)?;
+                Ruler::impliance_checker(&mut side, &c)?;
                 continue;
             }
             if c.is_whitespace() {
@@ -84,18 +90,32 @@ impl<'solver> Solver<'solver> {
                     '^' => rule.push(&side, Some(Operand::Xor), None),
                     '+' => rule.push(&side, Some(Operand::And), None),
                     '#' => break,
-                    '<' | '=' => Solver::impliance_checker(&mut side, &c)?,
-                    _ => return Err(Error::new(ErrorKind::InvalidData, format!("Rules: unexpected char (at {})", line))),
+                    '<' | '=' => Ruler::impliance_checker(&mut side, &c)?,
+                    _ => {
+                        return Err(Error::new(
+                            ErrorKind::InvalidData,
+                            format!("Rules: unexpected char (at {})", line),
+                        ))
+                    }
                 };
             }
         }
         if side != Side::Rhs {
-            return Err(Error::new(ErrorKind::InvalidData, format!("Rules: no impliance (at {})", line)));
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                format!("Rules: no impliance (at {})", line),
+            ));
         }
-        Solver::rule_composition_checker(&rule.lhs, line)?;
-        Solver::rule_composition_checker(&rule.rhs, line)?;
+        Ruler::rule_composition_checker(&rule.lhs, line)?;
+        Ruler::rule_composition_checker(&rule.rhs, line)?;
         self.rules.push(rule);
         Ok(())
+    }
+
+    pub fn to_reverse_polish_notation(&'ruler mut self) {
+        for rule in self.rules.iter_mut() {
+            rule.to_rpn();
+        }
     }
 
     pub fn print(&self) {

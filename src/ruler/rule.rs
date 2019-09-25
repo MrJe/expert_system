@@ -1,6 +1,7 @@
+pub mod rpn;
 pub mod token;
 
-use crate::parser::Fact;
+use crate::facts::Fact;
 use token::{Operand, Token};
 
 #[derive(Copy, Clone, PartialEq)]
@@ -11,15 +12,15 @@ pub enum Side {
     Bidirectional,
 }
 
-// type Rule<'a> = Vec<Token<'a>>
-pub struct Rule<'a> {
-    pub lhs: Vec<Token<'a>>,
-    pub rhs: Vec<Token<'a>>,
+// type Rule<'rule> = Vec<Token<'rule>>
+pub struct Rule<'rule> {
+    pub lhs: Vec<Token<'rule>>,
+    pub rhs: Vec<Token<'rule>>,
     pub is_equivalent: bool,
 }
 
-impl<'a> Rule<'a> {
-    pub fn new() -> Rule<'a> {
+impl<'rule> Rule<'rule> {
+    pub fn new() -> Rule<'rule> {
         Rule {
             lhs: Vec::new(),
             rhs: Vec::new(),
@@ -27,7 +28,12 @@ impl<'a> Rule<'a> {
         }
     }
 
-    pub fn push(&mut self, side: &Side, operand: Option<Operand>, fact: Option<&'a Fact>) {
+    pub fn to_rpn(&mut self) {
+        self.lhs = rpn::apply_on_vec(&self.lhs);
+        self.rhs = rpn::apply_on_vec(&self.rhs);
+    }
+
+    pub fn push(&mut self, side: &Side, operand: Option<Operand>, fact: Option<&'rule Fact>) {
         if *side == Side::Lhs {
             self.lhs.push(Token::new(operand, fact));
         } else {

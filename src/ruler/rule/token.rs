@@ -1,4 +1,4 @@
-use crate::parser::Fact;
+use crate::facts::Fact;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Operand {
@@ -35,7 +35,7 @@ impl Token<'_> {
 
     pub fn is_cumulable(&self) -> bool {
         if let Some(op) = self.operand {
-            return op == Operand::Not || op == Operand::Opening || op == Operand::Closing
+            return op == Operand::Not || op == Operand::Opening || op == Operand::Closing;
         }
         false
     }
