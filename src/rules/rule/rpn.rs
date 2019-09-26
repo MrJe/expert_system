@@ -25,8 +25,7 @@ pub fn apply_on_vec<'rule>(tokens: &Vec<Token<'rule>>) -> Result<Vec<Token<'rule
             }
             ret.push(Token::new(Some(*last), None));
             tmp.pop();
-        }
-        else {
+        } else {
             panic!("apply_on_vec(): tmp contain invalid Operand");
         }
     }
@@ -58,7 +57,7 @@ fn unstack_to_opening(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>) -> Result<()
         }
         ret.push(Token::new(Some(last), None));
     }
-	Ok(())
+    Ok(())
 }
 
 fn unstack_with_lvl(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
@@ -82,7 +81,7 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
             ));
         }
         unstack_to_opening(ret, tmp)?;
-        return Ok(())
+        return Ok(());
     }
     // TODO: if let Some()...
     if op != Operand::Opening
@@ -94,5 +93,5 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
     } else {
         tmp.push(op.clone());
     }
-	Ok(())
+    Ok(())
 }

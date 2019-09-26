@@ -6,7 +6,6 @@ use lib::rules::Rules;
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
 
-
 fn print_results(facts: Facts) {
     println!("Everything worked as expected, here are the results:");
     for (index, fact) in facts.fact_arr.iter().enumerate() {

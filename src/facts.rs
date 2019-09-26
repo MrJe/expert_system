@@ -4,6 +4,7 @@ use std::io::{Error, ErrorKind};
 #[derive(Clone, Debug)]
 pub struct Fact {
     pub state: Cell<bool>,
+    pub tmp_state: Cell<bool>,
     pub queried: Cell<bool>,
     pub letter: char,
 }
@@ -11,6 +12,7 @@ pub struct Fact {
 impl Fact {
     pub fn new(letter: char) -> Fact {
         Fact {
+            tmp_state: Cell::new(false),
             state: Cell::new(false),
             queried: Cell::new(false),
             letter,
@@ -78,6 +80,7 @@ impl Facts {
                         return Err(Error::new(ErrorKind::InvalidData, "Initial facts: doublon"));
                     }
                     fact.state.set(true);
+                    fact.tmp_state.set(true);
                 }
                 '#' => break,
                 _ => {

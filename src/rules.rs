@@ -1,10 +1,9 @@
-mod rule;
 mod checker;
+mod rule;
 
 use crate::facts::Facts;
 use rule::{token::Operand, Rule, Side};
 use std::io::{Error, ErrorKind};
-
 
 // pub struct Rules<'rules> {
 //     pub rules: Vec<Rule<'rules>>,
@@ -71,8 +70,8 @@ impl<'rules> Rules<'rules> {
         Ok(())
     }
 
-    pub fn solve(&mut self) -> Result<(), Error> {
-        for rule in self.0.iter_mut() {
+    pub fn solve(&self) -> Result<(), Error> {
+        for rule in self.0.iter() {
             rule.solve()?;
         }
         Ok(())

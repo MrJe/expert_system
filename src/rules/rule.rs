@@ -1,10 +1,10 @@
 pub mod rpn;
-pub mod token;
 pub mod solver;
+pub mod token;
 
 use crate::facts::Fact;
-use token::{Operand, Token};
 use std::io::Error;
+use token::{Operand, Token};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum Side {
@@ -46,8 +46,8 @@ impl<'rule> Rule<'rule> {
 
     pub fn print(&self) {
         for token in &self.lhs {
-            if token.fact.is_some() {
-                print!("{} ", token.fact.unwrap().letter);
+            if let Some(fact) = token.fact {
+                print!("{} ", fact.letter);
             } else {
                 print!("{} ", token.get_op_char());
             }
@@ -57,8 +57,8 @@ impl<'rule> Rule<'rule> {
             false => print!("=> "),
         }
         for token in &self.rhs {
-            if token.fact.is_some() {
-                print!("{} ", token.fact.unwrap().letter);
+            if let Some(fact) = token.fact {
+                print!("{} ", fact.letter);
             } else {
                 print!("{} ", token.get_op_char());
             }

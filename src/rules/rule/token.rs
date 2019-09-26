@@ -42,8 +42,23 @@ impl Token<'_> {
 
     pub fn set_state(&self, new_state: bool) {
         match self.fact {
-            Some(fact) => fact.state.set(new_state),
-            None => return,
+            Some(fact) => {
+                fact.state.set(new_state);
+                if fact.state.get() != fact.tmp_state.get() {
+                    panic!(
+                        "fact.set_state() should not be called when state != tmp_state, bad design"
+                    );
+                }
+                fact.tmp_state.set(new_state);
+            }
+            None => println!("set state on None"),
+        }
+    }
+
+    pub fn set_tmp_state(&self, new_state: bool) {
+        match self.fact {
+            Some(fact) => fact.tmp_state.set(new_state),
+            None => println!("set state on None"),
         }
     }
 
@@ -56,7 +71,7 @@ impl Token<'_> {
                 Operand::Or => '|',
                 Operand::Opening => '(',
                 Operand::Closing => ')',
-            }
+            };
         }
         '@'
     }
