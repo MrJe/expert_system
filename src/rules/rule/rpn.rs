@@ -82,7 +82,7 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
             ));
         }
         unstack_to_opening(ret, tmp)?;
-        Ok(())
+        return Ok(())
     }
     // TODO: if let Some()...
     if op != Operand::Opening

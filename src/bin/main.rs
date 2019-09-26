@@ -1,7 +1,7 @@
 const OUTPUT_FILE: &str = "RESULT.txt";
 
 use lib::facts::Facts;
-use lib::ruler::Ruler;
+use lib::rules::Rules;
 
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
@@ -42,13 +42,13 @@ fn print_solved_to_file(fname: &str, facts: &Facts) -> Result<(), Error> {
     Ok(())
 }
 
-fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Ruler<'a>, Error> {
+fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Rules<'a>, Error> {
     let reader = BufReader::new(file);
-    let mut ruler = Ruler::new();
+    let mut rules = Rules::new();
     for line in reader.lines() {
         if let Ok(line) = line {
             match line.trim().chars().next() {
-                Some('A'..='Z') | Some('(') | Some('!') => ruler.set_rule(&facts, &line)?,
+                Some('A'..='Z') | Some('(') | Some('!') => rules.set_rule(&facts, &line)?,
                 Some('=') => facts.set_initial_facts(&line)?,
                 Some('?') => facts.set_queries(&line)?,
                 Some('#') | None => continue,
@@ -61,15 +61,15 @@ fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Ruler<'a>, Error> {
             }
         }
     }
-    Ok(ruler)
+    Ok(rules)
 }
 
 fn solver(file: &File) -> Result<Facts, Error> {
     let facts = Facts::new();
-    let mut ruler = parser(file, &facts)?;
-    ruler.to_reverse_polish_notation()?;
-    ruler.print();
-    ruler.solve()?;
+    let mut rules = parser(file, &facts)?;
+    rules.to_reverse_polish_notation()?;
+    rules.print();
+    rules.solve()?;
     Ok(facts)
 }
 

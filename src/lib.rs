@@ -1,5 +1,5 @@
 pub mod facts;
-pub mod ruler;
+pub mod rules;
 
 #[cfg(test)]
 mod tests;

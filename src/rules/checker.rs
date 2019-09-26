@@ -1,4 +1,4 @@
-use crate::ruler::rule::{Side, token::Token};
+use super::rule::{Side, token::Token};
 use std::io::{Error, ErrorKind};
 
 pub fn impliance(side: &mut Side, &c: &char) -> Result<(), Error> {

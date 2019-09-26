@@ -6,16 +6,19 @@ use crate::facts::Facts;
 use rule::{token::Operand, Rule, Side};
 use std::io::{Error, ErrorKind};
 
-pub struct Ruler<'ruler> {
-    pub rules: Vec<Rule<'ruler>>,
-}
 
-impl<'ruler> Ruler<'ruler> {
-    pub fn new() -> Ruler<'ruler> {
-        Ruler { rules: Vec::new() }
+// pub struct Rules<'rules> {
+//     pub rules: Vec<Rule<'rules>>,
+// }
+
+pub struct Rules<'rules>(Vec<Rule<'rules>>);
+
+impl<'rules> Rules<'rules> {
+    pub fn new() -> Rules<'rules> {
+        Rules(Vec::new())
     }
 
-    pub fn set_rule(&mut self, facts: &'ruler Facts, line: &str) -> Result<(), Error> {
+    pub fn set_rule(&mut self, facts: &'rules Facts, line: &str) -> Result<(), Error> {
         let mut side = Side::Lhs;
         let mut rule = Rule::new();
 
@@ -58,12 +61,12 @@ impl<'ruler> Ruler<'ruler> {
         }
         checker::rule_composition(&rule.lhs, line)?;
         checker::rule_composition(&rule.rhs, line)?;
-        self.rules.push(rule);
+        self.0.push(rule);
         Ok(())
     }
 
     pub fn to_reverse_polish_notation(&mut self) -> Result<(), Error> {
-        for rule in self.rules.iter_mut() {
+        for rule in self.0.iter_mut() {
             rule.to_rpn()?;
         }
         Ok(())
@@ -71,7 +74,7 @@ impl<'ruler> Ruler<'ruler> {
 
     pub fn print(&self) {
         println!("PRINTING RULES");
-        for rule in &self.rules {
+        for rule in &self.0 {
             rule.print();
         }
         print!("\n");
