@@ -67,8 +67,10 @@ fn unstack_with_lvl(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
         tmp.pop();
 
         ret.push(Token::new(Some(last), None));
-        if tmp.is_empty() == false && op_priority(op) <= op_priority(*tmp.last().unwrap()) {
-            break;
+        if let Some(last) = tmp.last() {
+            if op_priority(op) <= op_priority(*last) {
+                break;
+            }
         }
     }
 }
@@ -84,15 +86,12 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
         unstack_to_opening(ret, tmp)?;
         return Ok(())
     }
-    // TODO: if let Some()...
     if op != Operand::Opening
         && tmp.is_empty() == false
         && op_priority(op) > op_priority(*tmp.last().unwrap())
     {
         unstack_with_lvl(ret, tmp, op);
-        tmp.push(op.clone());
-    } else {
-        tmp.push(op.clone());
     }
+    tmp.push(op.clone());
 	Ok(())
 }
