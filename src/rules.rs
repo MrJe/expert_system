@@ -1,5 +1,5 @@
 mod checker;
-mod rule;
+pub mod rule;
 
 use crate::facts::Facts;
 use rule::{token::Operand, Rule, Side};
