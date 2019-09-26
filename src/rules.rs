@@ -1,6 +1,5 @@
 mod rule;
 mod checker;
-mod solver;
 
 use crate::facts::Facts;
 use rule::{token::Operand, Rule, Side};
@@ -68,6 +67,13 @@ impl<'rules> Rules<'rules> {
     pub fn to_reverse_polish_notation(&mut self) -> Result<(), Error> {
         for rule in self.0.iter_mut() {
             rule.to_rpn()?;
+        }
+        Ok(())
+    }
+
+    pub fn solve(&mut self) -> Result<(), Error> {
+        for rule in self.0.iter_mut() {
+            rule.solve()?;
         }
         Ok(())
     }

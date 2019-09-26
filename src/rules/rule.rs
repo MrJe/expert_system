@@ -1,5 +1,6 @@
 pub mod rpn;
 pub mod token;
+pub mod solver;
 
 use crate::facts::Fact;
 use token::{Operand, Token};
