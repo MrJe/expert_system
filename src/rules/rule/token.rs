@@ -80,4 +80,21 @@ impl Token<'_> {
             panic!("Empty Token");
         }
     }
+
+    pub fn cmp_tok(&self, tok: &Token) -> bool {
+        if self.fact.is_some() && tok.fact.is_some() {
+            if self.fact.unwrap().letter == tok.fact.unwrap().letter {
+                    return true
+            } else {
+                return false
+            }
+        } else if self.operand.is_some() && tok.operand.is_some() {
+            if self.operand.unwrap() == tok.operand.unwrap() {
+                return true
+            } else {
+                return false
+            }
+        }
+        false
+    }
 }
