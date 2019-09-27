@@ -13,7 +13,7 @@ impl Fact {
     pub fn new(letter: char) -> Fact {
         Fact {
             state: Cell::new(false),
-            determined: Cell::new(false),
+            determined: Cell::new(true),
             queried: Cell::new(false),
             letter,
         }
@@ -80,7 +80,6 @@ impl Facts {
                         return Err(Error::new(ErrorKind::InvalidData, "Initial facts: doublon"));
                     }
                     fact.state.set(true);
-                    fact.determined.set(true);
                     println!("{} set to `true`", fact.letter);
                 }
                 '#' => break,
