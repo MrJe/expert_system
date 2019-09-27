@@ -83,12 +83,23 @@ fn run_test(expr: &str, rslt: &str, ass: bool) -> Result<(), Error> {
         Fact::new('Z'),
     ];
     let exptok: Vec<Token> = tokenise_str(&expr, &facts);
-    let exptok: Vec<Token> = apply_on_vec(&exptok)?;
     let rsltok: Vec<Token> = tokenise_str(&rslt, &facts);
 
+    let exptok_rpn = apply_on_vec(&exptok);
+    let mut exptok: Vec<Token> = Vec::new();
+
+    match exptok_rpn {
+        Ok(vec)  => exptok = vec,
+        Err(er)  => {
+            if ass == true {
+                return Err(er)
+            }
+        }
+    }
     assert_eq!(cmp_tokens(exptok, rsltok), ass);
     Ok(())
 }
+
 /* *** Standard *** */
 #[test]
 #[should_panic]
@@ -191,24 +202,47 @@ fn test_rpn_10() -> Result<(), Error> {
     let rslt: &str = "A B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z |";
     run_test(expr, rslt, true)
 }
-// #[test]
-// fn test_rpn_brackets_01() -> Result<(), Error> {
-//     let expr: &str = "A ^ )B + C | D";
-//     let rslt: &str = "A B C + ^ D |";
-//     let _ = run_test(expr, rslt, false)?;
-//     Ok(())
-// }
-// #[test]
-// fn test_rpn_brackets_02() -> Result<(), Error> {
-//     let expr: &str = "(A ^ B + C | D";
-//     let rslt: &str = "A B C + ^ D |";
-//     let _ = run_test(expr, rslt, false);
-//     Ok(())
-// }
-// #[test]
-// fn test_rpn_brackets_03() -> Result<(), Error> {
-//     let expr: &str = "A ^ B + C | D)";
-//     let rslt: &str = "A B C + ^ D |";
-//     let _ = run_test(expr, rslt, false);
-//     Ok(())
-// }
+/* *** Brackets Error *** */
+#[test]
+fn test_rpn_brackets_01() -> Result<(), Error> {
+    let expr: &str = "A ^ )B + C | D";
+    let rslt: &str = "A B C + ^ D |";
+    run_test(expr, rslt, false)
+}
+#[test]
+fn test_rpn_brackets_02() -> Result<(), Error> {
+    let expr: &str = "(A ^ B + C | D";
+    let rslt: &str = "A B C + ^ D |";
+    run_test(expr, rslt, false)
+}
+#[test]
+fn test_rpn_brackets_03() -> Result<(), Error> {
+    let expr: &str = "A ^ B + C | D)";
+    let rslt: &str = "A B C + ^ D |";
+    run_test(expr, rslt, false)
+}
+#[test]
+fn test_rpn_brackets_04() -> Result<(), Error> {
+    let expr: &str = "A (^ B + C |) D";
+    let rslt: &str = "A B C + ^ D |";
+    run_test(expr, rslt, false)
+}
+/* *** Wrong char Error *** */
+#[test]
+fn test_rpn_char_01() -> Result<(), Error> {
+    let expr: &str = "a ^ b + c | d";
+    let rslt: &str = "a b c + ^ d |";
+    run_test(expr, rslt, false)
+}
+#[test]
+fn test_rpn_char_02() -> Result<(), Error> {
+    let expr: &str = "1 ^ 2 + 3 | 4";
+    let rslt: &str = "1 2 3 + ^ 4 |";
+    run_test(expr, rslt, false)
+}
+#[test]
+fn test_rpn_char_03() -> Result<(), Error> {
+    let expr: &str = "A * B - C / D";
+    let rslt: &str = "A B C - * D /";
+    run_test(expr, rslt, false)
+}
