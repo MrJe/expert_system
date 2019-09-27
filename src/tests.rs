@@ -27,17 +27,17 @@ fn tokenise_str<'rule>(arg: &str, facts: &'rule Vec<Fact>) -> Vec<Token<'rule>> 
     ret
 }
 
-fn print_tokens(tokens: &Vec<Token>) {
-    for token in tokens {
-        if token.fact.is_some() {
-            print!("{} ", token.fact.as_ref().unwrap().letter);
-        }
-        else {
-            print!("{} ", token.get_op_char());
-        }
-    }
-    println!("");
-}
+// fn print_tokens(tokens: &Vec<Token>) {
+//     for token in tokens {
+//         if token.fact.is_some() {
+//             print!("{} ", token.fact.as_ref().unwrap().letter);
+//         }
+//         else {
+//             print!("{} ", token.get_op_char());
+//         }
+//     }
+//     println!("");
+// }
 
 fn cmp_tokens(exp: Vec<Token>, res: Vec<Token>) -> bool {
     let mut i = exp.len();
@@ -86,15 +86,10 @@ fn run_test(expr: &str, rslt: &str, ass: bool) -> Result<(), Error> {
     let exptok: Vec<Token> = apply_on_vec(&exptok)?;
     let rsltok: Vec<Token> = tokenise_str(&rslt, &facts);
 
-    print!("exptok: ");
-    print_tokens(&exptok);
-    print!("rsltok: ");
-    print_tokens(&rsltok);
-
     assert_eq!(cmp_tokens(exptok, rsltok), ass);
     Ok(())
 }
-
+/* *** Standard *** */
 #[test]
 #[should_panic]
 fn test_ko() {
@@ -104,55 +99,32 @@ fn test_ko() {
 fn test_ok() {
     assert_eq!(true, true);
 }
+/* *** KO FALSE *** */
 #[test]
-#[should_panic]
-fn test_rpn_ko_op_miss() {
+fn test_rpn_ko_op_miss() -> Result<(), Error> {
     let expr: &str = "A + B";
     let rslt: &str = "A + B";
-    let _ = run_test(expr, rslt, true);
+    run_test(expr, rslt, false)
 }
 #[test]
-#[should_panic]
-fn test_rpn_ko_bad_op() {
+fn test_rpn_ko_bad_op() -> Result<(), Error> {
     let expr: &str = "A + B";
     let rslt: &str = "A B ^";
-    let _ = run_test(expr, rslt, true);
+    run_test(expr, rslt, false)
 }
 #[test]
-#[should_panic]
-fn test_rpn_ko_letter_a() {
+fn test_rpn_ko_letter_a() -> Result<(), Error> {
     let expr: &str = "A + B";
     let rslt: &str = "A A +";
-    let _ = run_test(expr, rslt, true);
+    run_test(expr, rslt, false)
 }
 #[test]
-#[should_panic]
-fn test_rpn_ko_letter_b() {
+fn test_rpn_ko_letter_b() -> Result<(), Error> {
     let expr: &str = "A + B";
     let rslt: &str = "B B +";
-    let _ = run_test(expr, rslt, true);
+    run_test(expr, rslt, false)
 }
-#[test]
-fn test_rpn_brackets_01() -> Result<(), Error> {
-    let expr: &str = "A ^ )B + C | D";
-    let rslt: &str = "A B C + ^ D |";
-    let _ = run_test(expr, rslt, false);
-    Ok(())
-}
-#[test]
-fn test_rpn_brackets_02() -> Result<(), Error> {
-    let expr: &str = "(A ^ B + C | D";
-    let rslt: &str = "A B C + ^ D |";
-    let _ = run_test(expr, rslt, false);
-    Ok(())
-}
-#[test]
-fn test_rpn_brackets_03() -> Result<(), Error> {
-    let expr: &str = "A ^ B + C | D)";
-    let rslt: &str = "A B C + ^ D |";
-    let _ = run_test(expr, rslt, false);
-    Ok(())
-}
+/* *** OK TRUE *** */
 #[test]
 fn test_rpn_ok() -> Result<(), Error> {
     let expr: &str = "A + B";
@@ -183,3 +155,60 @@ fn test_rpn_02() -> Result<(), Error> {
     let rslt: &str = "A B C D | + ^";
     run_test(expr, rslt, true)
 }
+#[test]
+fn test_rpn_03() -> Result<(), Error> {
+    let expr: &str = "A + B | C ^ (A ^ !C)";
+    let rslt: &str = "A B + C A C ! ^ ^ |";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_04() -> Result<(), Error> {
+    let expr: &str = "((!(!(!(!(A + !B) ^ C) + D) | !E)))";
+    let rslt: &str = "A B ! + ! C ^ ! D + ! E ! | !";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_05() -> Result<(), Error> {
+    let expr: &str = "A ^ B ^ C + E + D";
+    let rslt: &str = "A B ^ C E + D + ^";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_06() -> Result<(), Error> {
+    let expr: &str = "A | B | C";
+    let rslt: &str = "A B | C |";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_07() -> Result<(), Error> {
+    let expr: &str = "(A | B) ^ (C | D)";
+    let rslt: &str = "A B | C D | ^";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_10() -> Result<(), Error> {
+    let expr: &str = "A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z";
+    let rslt: &str = "A B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z |";
+    run_test(expr, rslt, true)
+}
+// #[test]
+// fn test_rpn_brackets_01() -> Result<(), Error> {
+//     let expr: &str = "A ^ )B + C | D";
+//     let rslt: &str = "A B C + ^ D |";
+//     let _ = run_test(expr, rslt, false)?;
+//     Ok(())
+// }
+// #[test]
+// fn test_rpn_brackets_02() -> Result<(), Error> {
+//     let expr: &str = "(A ^ B + C | D";
+//     let rslt: &str = "A B C + ^ D |";
+//     let _ = run_test(expr, rslt, false);
+//     Ok(())
+// }
+// #[test]
+// fn test_rpn_brackets_03() -> Result<(), Error> {
+//     let expr: &str = "A ^ B + C | D)";
+//     let rslt: &str = "A B C + ^ D |";
+//     let _ = run_test(expr, rslt, false);
+//     Ok(())
+// }
