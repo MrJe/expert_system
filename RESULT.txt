@@ -1,3 +1,4 @@
+E = TRUE
 G = FALSE
 V = FALSE
 X = FALSE

@@ -69,6 +69,7 @@ fn solver(file: &File) -> Result<Facts, Error> {
     rules.to_reverse_polish_notation()?;
     rules.print();
     rules.solve()?;
+    lib::checker::solved_queries(&facts)?;
     Ok(facts)
 }
 

@@ -42,22 +42,7 @@ impl Token<'_> {
 
     pub fn set_state(&self, new_state: bool) {
         match self.fact {
-            Some(fact) => {
-                fact.state.set(new_state);
-                if fact.state.get() != fact.tmp_state.get() {
-                    panic!(
-                        "fact.set_state() should not be called when state != tmp_state, bad design"
-                    );
-                }
-                fact.tmp_state.set(new_state);
-            }
-            None => println!("set state on None"),
-        }
-    }
-
-    pub fn set_tmp_state(&self, new_state: bool) {
-        match self.fact {
-            Some(fact) => fact.tmp_state.set(new_state),
+            Some(fact) => fact.state.set(new_state),
             None => println!("set state on None"),
         }
     }
@@ -74,5 +59,25 @@ impl Token<'_> {
             };
         }
         '@'
+    }
+
+    pub fn print(&self) {
+        if let Some(fact) = self.fact {
+            print!("{} ", fact.letter);
+        } else if self.operand.is_some() {
+            print!("{} ", self.get_op_char());
+        } else {
+            panic!("Empty Token");
+        }
+    }
+
+    pub fn print_state(&self) {
+        if let Some(fact) = self.fact {
+            print!("{}({}) ", fact.state.get(), fact.letter);
+        } else if self.operand.is_some() {
+            print!("{} ", self.get_op_char());
+        } else {
+            panic!("Empty Token");
+        }
     }
 }

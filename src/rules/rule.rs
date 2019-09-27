@@ -46,22 +46,14 @@ impl<'rule> Rule<'rule> {
 
     pub fn print(&self) {
         for token in &self.lhs {
-            if let Some(fact) = token.fact {
-                print!("{} ", fact.letter);
-            } else {
-                print!("{} ", token.get_op_char());
-            }
+            token.print();
         }
         match self.is_equivalent {
             true => print!("<=> "),
             false => print!("=> "),
         }
         for token in &self.rhs {
-            if let Some(fact) = token.fact {
-                print!("{} ", fact.letter);
-            } else {
-                print!("{} ", token.get_op_char());
-            }
+            token.print();
         }
         print!("\n");
     }

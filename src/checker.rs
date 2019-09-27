@@ -1,5 +1,18 @@
-use super::rule::{token::Token, Side};
+use crate::rules::rule::{token::Token, Side};
+use crate::facts::Facts;
 use std::io::{Error, ErrorKind};
+
+pub fn solved_queries(facts: &Facts) -> Result<(), Error> {
+    if facts.is_stable == false {
+        return Err(Error::new(ErrorKind::InvalidData, "(Solved) Queries: unstable ruleset"))
+    }
+    for fact in facts.fact_arr.iter() {
+        if fact.queried.get() == true && fact.determined.get() == false {
+            return Err(Error::new(ErrorKind::InvalidData, "(Solved) Queries: undetermined fact"))
+        }
+    }
+    Ok(())
+}
 
 pub fn impliance(side: &mut Side, &c: &char) -> Result<(), Error> {
     if *side == Side::Rhs {
