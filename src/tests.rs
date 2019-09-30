@@ -246,3 +246,8 @@ fn test_rpn_char_03() -> Result<(), Error> {
     let rslt: &str = "A B C - * D /";
     run_test(expr, rslt, false)
 }
+// #[test]
+// fn file_doesnt_exist() -> Result<(), Error> {
+//     run_ep("Voldemort");
+//     Ok(())
+// }
