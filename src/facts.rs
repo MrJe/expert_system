@@ -80,6 +80,7 @@ impl Facts {
                         return Err(Error::new(ErrorKind::InvalidData, "Initial facts: doublon"));
                     }
                     fact.state.set(true);
+                    fact.determined.set(true);
                     println!("{} set to `true`", fact.letter);
                 }
                 '#' => break,
