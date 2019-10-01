@@ -79,22 +79,25 @@ fn expert_system(file: File) -> Result<Facts, Error> {
     Ok(solved_facts)
 }
 
+fn run_ep(filename: &str) {
+    match File::open(filename) {
+        Ok(file) => match expert_system(file) {
+            Ok(facts) => print_results(facts),
+            Err(error) => println!(
+                "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
+                error
+            ),
+        },
+        Err(error) => println!("open: {}: {:#?}", filename, error),
+    };
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() != 2 {
         println!("usage: ./expert_system input_file");
     } else {
-        let filename = &args[1];
-        match File::open(filename) {
-            Ok(file) => match expert_system(file) {
-                Ok(facts) => print_results(facts),
-                Err(error) => println!(
-                    "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
-                    error
-                ),
-            },
-            Err(error) => println!("open: {}: {:#?}", filename, error),
-        };
+        run_ep(&args[1]);
     }
 }
