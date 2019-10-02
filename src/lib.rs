@@ -4,6 +4,3 @@ pub mod rules;
 pub mod checker;
 pub mod graph;
 pub mod print;
-
-#[cfg(test)]
-mod tests;
