@@ -8,3 +8,13 @@ fn file_doesnt_exist() -> Result<(), Error> {
     run_ep("Voldemort");
     Ok(())
 }
+#[test]
+fn is_directory() -> Result<(), Error> {
+    run_ep("src");
+    Ok(())
+}
+#[test]
+fn no_rights() -> Result<(), Error> {
+    run_ep("/.file");
+    Ok(())
+}

@@ -1,7 +1,6 @@
 use lib::rules::rule::token::{Operand, Token};
 use lib::rules::rule::rpn::apply_on_vec;
 use lib::facts::Fact;
-// use lib::expert_system::run_ep;
 
 use std::io::Error;
 
@@ -28,18 +27,6 @@ fn tokenise_str<'rule>(arg: &str, facts: &'rule Vec<Fact>) -> Vec<Token<'rule>> 
     }
     ret
 }
-
-// fn print_tokens(tokens: &Vec<Token>) {
-//     for token in tokens {
-//         if token.fact.is_some() {
-//             print!("{} ", token.fact.as_ref().unwrap().letter);
-//         }
-//         else {
-//             print!("{} ", token.get_op_char());
-//         }
-//     }
-//     println!("");
-// }
 
 fn cmp_tokens(exp: Vec<Token>, res: Vec<Token>) -> bool {
     let mut i = exp.len();

@@ -6,6 +6,7 @@ use crate::rules::Rules;
 use crate::print::{print_solved_to_file, print_results};
 
 use std::fs::File;
+use std::path::Path;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
 
 fn parser<'a>(file: &File, facts: &'a Facts) -> Result<Rules<'a>, Error> {
@@ -40,21 +41,30 @@ fn solver(file: &File) -> Result<Facts, Error> {
     Ok(facts)
 }
 
-fn expert_system(file: File) -> Result<Facts, Error> {
-    let solved_facts: Facts = solver(&file)?;
-    print_solved_to_file(OUTPUT_FILE, &solved_facts)?;
-    Ok(solved_facts)
+fn expert_system(file: File) {
+    match solver(&file) {
+        Ok(facts)   => {
+            print_solved_to_file(OUTPUT_FILE, &facts);
+            print_results(facts);
+        },
+        Err(error)  => println!(
+            "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
+            error
+        ),
+    }
+}
+
+fn open_file(filename: &str) {
+    match File::open(filename) {
+        Ok(file)    => expert_system(file),
+        Err(error)  => println!("open: {}: {:#?}", filename, error),
+    };
 }
 
 pub fn run_ep(filename: &str) {
-    match File::open(filename) {
-        Ok(file) => match expert_system(file) {
-            Ok(facts) => print_results(facts),
-            Err(error) => println!(
-                "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
-                error
-            ),
-        },
-        Err(error) => println!("open: {}: {:#?}", filename, error),
-    };
+    if Path::new(filename).is_dir() == true {
+        println!("open: {}: Is a directory", filename);
+    } else {
+        open_file(filename);
+    }
 }
