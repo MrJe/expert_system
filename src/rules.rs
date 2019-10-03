@@ -70,13 +70,6 @@ impl<'rules> Rules<'rules> {
         Ok(())
     }
 
-    pub fn solve(&self) -> Result<(), Error> {
-        for rule in self.0.iter() {
-            rule.solve()?;
-        }
-        Ok(())
-    }
-
     pub fn print(&self) {
         println!("PRINTING RULES");
         for rule in &self.0 {

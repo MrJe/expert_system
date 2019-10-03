@@ -1,29 +1,25 @@
-use crate::facts::Facts;
+use crate::facts::Fact;
 
 use std::fs::File;
 use std::io::{prelude::*, Error};
 
-pub fn print_results(facts: Facts) {
+pub fn results(solved_queries: &Vec<Fact>) {
     println!("Everything worked as expected, here are the results:");
-    for (index, fact) in facts.fact_arr.iter().enumerate() {
-        if fact.queried.get() == true {
-            let c = (index as u8 + b'A') as char;
-            print!("{}", c);
-            match fact.state.get() {
-                true => println!(" = TRUE"),
-                false => println!(" = FALSE"),
-            }
+    for fact in solved_queries.iter() {
+        print!("{}", fact.letter);
+        match fact.state.get() {
+            true => println!(" = TRUE"),
+            false => println!(" = FALSE"),
         }
     }
 }
 
-pub fn print_solved_to_file(fname: &str, facts: &Facts) -> Result<(), Error> {
+pub fn solved_to_file(fname: &str, solved_queries: &Vec<Fact>) -> Result<(), Error> {
     let mut f = File::create(fname)?;
     let mut fcontents = String::new();
-    for (index, fact) in facts.fact_arr.iter().enumerate() {
+    for fact in solved_queries.iter() {
         if fact.queried.get() == true {
-            let c = (index as u8 + b'A') as char;
-            fcontents.push(c);
+            fcontents.push(fact.letter);
             match fact.state.get() {
                 true => fcontents.push_str(" = TRUE\n"),
                 false => fcontents.push_str(" = FALSE\n"),

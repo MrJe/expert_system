@@ -16,9 +16,17 @@ pub struct Token<'a> {
     pub fact: Option<&'a Fact>,
 }
 
-impl Token<'_> {
+impl<'a> Token<'a> {
     pub fn new(operand: Option<Operand>, fact: Option<&Fact>) -> Token {
         Token { operand, fact }
+    }
+
+    pub fn new_op(operand: Operand) -> Token<'a> {
+        Token { operand: Some(operand), fact: None }
+    }
+
+    pub fn new_fact(fact: &'a Fact) -> Token<'a> {
+        Token { operand: None, fact: Some(fact) }
     }
 
     pub fn is_empty(&self) -> bool {

@@ -18,6 +18,15 @@ impl Fact {
             letter,
         }
     }
+
+    pub fn copy(&self) -> Fact {
+        Fact {
+            state: Cell::new(self.state.get()),
+            determined: Cell::new(self.determined.get()),
+            queried: Cell::new(self.queried.get()),
+            letter : self.letter,
+        }
+    }
 }
 
 pub struct Facts {

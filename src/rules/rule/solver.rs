@@ -1,9 +1,9 @@
-use super::token::{Operand, Token};
+use super::token::{Operand};
 use super::Rule;
 use crate::facts::Fact;
 use std::io::{Error, ErrorKind};
 
-fn errWrapper(err: &str) -> Result<bool, Error> {
+fn err_wrapper(err: &str) -> Result<bool, Error> {
     Err(Error::new(ErrorKind::InvalidData, format!("Solver: {} (lhs)", err)))
 }
 
@@ -24,22 +24,22 @@ impl<'rules> Rule<'rules> {
                         if let Some(last) = facts.pop() {
                             if let Some(state) = facts.last_mut() {
                                 *state &= last;
-                            } else { return errWrapper("missing fact -2") }
-                        } else { return errWrapper("missing fact -1") }
+                            } else { return err_wrapper("missing fact -2") }
+                        } else { return err_wrapper("missing fact -1") }
                     },
                     Operand::Xor => {
                         if let Some(last) = facts.pop() {
                             if let Some(state) = facts.last_mut() {
                                 *state ^= last;
-                            } else { return errWrapper("missing fact -2") }
-                        } else { return errWrapper("missing fact -1") }
+                            } else { return err_wrapper("missing fact -2") }
+                        } else { return err_wrapper("missing fact -1") }
                     },
                     Operand::Or => {
                         if let Some(last) = facts.pop() {
                             if let Some(state) = facts.last_mut() {
                                 *state |= last;
-                            } else { return errWrapper("missing fact -2") }
-                        } else { return errWrapper("missing fact -1") }
+                            } else { return err_wrapper("missing fact -2") }
+                        } else { return err_wrapper("missing fact -1") }
                     },
                     _ => panic!("Solver: brackets found, should never happen"),
                 }
@@ -69,8 +69,8 @@ impl<'rules> Rule<'rules> {
                                 last.state.set(true);
                                 prev.state.set(true);
                                 to_determine.push(last);
-                            } else { return errWrapper("missing fact -2") }
-                        } else { return errWrapper("missing fact -1") }
+                            } else { return err_wrapper("missing fact -2") }
+                        } else { return err_wrapper("missing fact -1") }
                     },
                     Operand::Xor => {
                     },
@@ -79,7 +79,7 @@ impl<'rules> Rule<'rules> {
                     Operand::Not => {
                         if let Some(last) = facts.pop() {
                             last.state.set(false);
-                        } else { return errWrapper("missing fact") }
+                        } else { return err_wrapper("missing fact") }
                     }
                     _ => panic!("Solver: brackets found, should never happen"),
                 }
@@ -89,7 +89,7 @@ impl<'rules> Rule<'rules> {
         }
         if let Some(last) = facts.pop() {
             to_determine.push(last);
-        } else { return errWrapper("missing fact") }
+        } else { return err_wrapper("missing fact") }
         if !facts.is_empty() {
             return Err(Error::new(ErrorKind::InvalidData, "Solver: no facts (rhs)"))
         }
