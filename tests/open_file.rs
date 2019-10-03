@@ -4,6 +4,10 @@ use lib::expert_system::run_ep;
 use std::io::Error;
 
 #[test]
+fn empty_file() -> Result<(), Error> {
+    run_ep("");
+    Ok(())
+}#[test]
 fn file_doesnt_exist() -> Result<(), Error> {
     run_ep("Voldemort");
     Ok(())
