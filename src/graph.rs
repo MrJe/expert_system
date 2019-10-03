@@ -1,64 +1,107 @@
-use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 
-pub type Index = u32;
+pub type NodeIndex = usize;
 
-pub struct Node<'a, T> {
-	content: &'a T,
-	lhs: Option<Index>,
-	rhs: Option<Index>,
+#[derive(Clone, Debug)]
+pub struct Node<T> {
+	content: T,
+	lhs: Option<NodeIndex>,
+	rhs: Option<NodeIndex>,
+	parent: Option<NodeIndex>,
 }
 
-impl<'a, T> Node<'a, T> {
-	pub fn new(content: &'a T) -> Node<'a, T> {
+impl<T> Node<T> {
+	pub fn new(content: T, parent: Option<NodeIndex>) -> Node<T> {
 		Node {
 			content,
 			lhs: None,
 			rhs: None,
+			parent,
 		}
 	}
 
-	pub fn push(&mut self, index: Index) -> Result<(), Error> {
+	pub fn set_lhs(&mut self, index: NodeIndex) -> Result<NodeIndex, Error> {
 		if self.lhs.is_some() {
-			if self.rhs.is_some() {
-				return Err(Error::new(ErrorKind::Other, "Graph: node already filled"))
-			}
-			self.rhs = Some(index);
-			return Ok(())
+			return Err(Error::new(ErrorKind::Other, "Graph: lhs already filled"))
 		}
 		self.lhs = Some(index);
-		Ok(())
+		Ok(index)
 	}
 
-	pub fn get(&'a self) -> &'a Node<'a, T> {
-		&self
+	pub fn set_rhs(&mut self, index: NodeIndex) -> Result<NodeIndex, Error> {
+		if self.rhs.is_some() {
+			return Err(Error::new(ErrorKind::Other, "Graph: rhs already filled"))
+		}
+		self.rhs = Some(index);
+		Ok(index)
 	}
 
-	pub fn get_content(&'a self) -> &'a T {
-		&self.content
+	pub fn set_parent(&mut self, index: NodeIndex) -> Result<NodeIndex, Error> {
+		if self.parent.is_some() {
+			return Err(Error::new(ErrorKind::Other, "Graph: parent already filled"))
+		}
+		self.parent = Some(index);
+		Ok(index)
 	}
 }
 
+#[derive(Clone, Debug)]
+pub struct Graph<T>(Vec<Node<T>>);
 
-pub struct Graph<'a, T>(HashMap<Index, Node<'a, T>>);
-
-impl<'a, T> Graph<'a, T> {
-	pub fn new(size: usize) -> Graph<'a, T> {
-		Graph(HashMap::with_capacity(size))
+impl<T> Graph<T> {
+	pub fn new() -> Graph<T> {
+		Graph(Vec::new())
 	}
 
-	pub fn insert(&mut self, key: Index, content: &'a T) -> Result<(), Error> {
-		let node = Node::new(content);
-		self.0.insert(key, node);
-		Ok(())
+	fn push(&mut self, content: T, parent: Option<NodeIndex>) -> NodeIndex {
+		let node = Node::new(content, parent);
+		self.0.push(node);
+		self.0.len() - 1
 	}
 
-	pub fn get(&self, key: Index) -> Option<&Node<'a, T>> {
-		for (i, noderef) in self.0.iter() {
-			if *i == key {
-				return Some(&noderef)
+	pub fn add_query(&mut self, content: T) -> NodeIndex {
+		self.push(content, None)
+	}
+
+	pub fn insert_lhs(&mut self, current: NodeIndex, content: T) -> Result<NodeIndex, Error> {
+		let new_node_index = self.push(content, Some(current));
+		if let Some(node) = self.get_mut(current) {
+			match node.set_lhs(new_node_index) {
+				Ok(child_index) => return Ok(child_index),
+				Err(err) => {
+					self.0.pop();
+					return Err(err)
+				}
 			}
 		}
-		None
+		self.0.pop();
+		return Err(Error::new(ErrorKind::InvalidData, "Graph: node index not exist"))
+	}
+
+	pub fn insert_rhs(&mut self, current: NodeIndex, content: T) -> Result<NodeIndex, Error> {
+		let new_node_index = self.push(content, Some(current));
+		if let Some(node) = self.get_mut(current) {
+			match node.set_rhs(new_node_index) {
+				Ok(child_index) => return Ok(child_index),
+				Err(err) => {
+					self.0.pop();
+					return Err(err)
+				}
+			}
+		}
+		self.0.pop();
+		return Err(Error::new(ErrorKind::InvalidData, "Graph: node index not exist"))
+	}
+
+	pub fn insert_operand(&mut self, current: NodeIndex, content: T) -> Result<NodeIndex, Error> {
+		self.insert_lhs(current, content)
+	}
+
+	pub fn get(&self, key: NodeIndex) -> Option<&Node<T>> {
+		self.0.get(key)
+	}
+
+	pub fn get_mut(&mut self, key: NodeIndex) -> Option<&mut Node<T>> {
+		self.0.get_mut(key)
 	}
 }
