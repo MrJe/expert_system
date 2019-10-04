@@ -4,10 +4,10 @@ pub type NodeIndex = usize;
 
 #[derive(Clone, Debug)]
 pub struct Node<T> {
-	content: T,
-	lhs: Option<NodeIndex>,
-	rhs: Option<NodeIndex>,
-	parent: Option<NodeIndex>,
+	pub content: T,
+	pub lhs: Option<NodeIndex>,
+	pub rhs: Option<NodeIndex>,
+	pub parent: Option<NodeIndex>,
 }
 
 impl<T> Node<T> {

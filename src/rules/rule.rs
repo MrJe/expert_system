@@ -32,6 +32,7 @@ impl<'rule> Rule<'rule> {
 
     pub fn to_rpn(&mut self) -> Result<(), Error> {
         self.lhs = rpn::apply_on_vec(&self.lhs)?;
+        self.lhs.reverse(); // WIP GRAPH BROWSING
         self.rhs = rpn::apply_on_vec(&self.rhs)?;
         Ok(())
     }
@@ -42,6 +43,17 @@ impl<'rule> Rule<'rule> {
         } else {
             self.rhs.push(Token::new(operand, fact));
         }
+    }
+
+    pub fn implies_fact(&self, implied_fact: &Fact) -> bool {
+        for token in self.rhs.iter() {
+            if let Some(fact) = token.fact {
+                if fact.letter == implied_fact.letter {
+                    return true
+                }
+            }
+        }
+        false
     }
 
     pub fn print(&self) {

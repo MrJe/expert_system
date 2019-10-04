@@ -4,6 +4,7 @@ use crate::checker;
 use crate::facts::Facts;
 use rule::{token::Operand, Rule, Side};
 use std::io::{Error, ErrorKind};
+use core::slice::Iter;
 
 // pub struct Rules<'rules> {
 //     pub rules: Vec<Rule<'rules>>,
@@ -61,6 +62,10 @@ impl<'rules> Rules<'rules> {
         checker::rule_composition(&rule.rhs, line)?;
         self.0.push(rule);
         Ok(())
+    }
+
+    pub fn iter(&self) -> Iter<Rule<'rules>> {
+        self.0.iter()
     }
 
     pub fn to_reverse_polish_notation(&mut self) -> Result<(), Error> {
