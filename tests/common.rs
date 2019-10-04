@@ -29,18 +29,6 @@ fn tokenise_str<'rule>(arg: &str, facts: &'rule Vec<Fact>) -> Vec<Token<'rule>> 
     ret
 }
 
-// fn print_tokens(tokens: &Vec<Token>) {
-//     for token in tokens {
-//         if token.fact.is_some() {
-//             print!("{} ", token.fact.as_ref().unwrap().letter);
-//         }
-//         else {
-//             print!("{} ", token.get_op_char());
-//         }
-//     }
-//     println!("");
-// }
-
 fn cmp_tokens(exp: Vec<Token>, res: Vec<Token>) -> bool {
     let mut i = exp.len();
     if i != res.len() {
