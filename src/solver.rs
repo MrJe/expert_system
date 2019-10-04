@@ -20,8 +20,8 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                 if token.is_operand() {
                     cur = graph.insert_operand(cur, token)?;
                 } else {
-                    match graph.get_mut(cur) {
-                        Some(node) => { // node
+                    match graph.get(cur) {
+                        Some(mut node) => { // node: &Node
                             if node.lhs.is_none() {
                                 graph.insert_lhs(cur, token)?;
                             } else {
@@ -29,10 +29,10 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                                     if node.rhs.is_some() {
                                         cur = node.parent.unwrap();
                                     } else {
-                                        cur = graph.insert_rhs(cur, token)?;
+                                        graph.insert_rhs(cur, token)?;
                                         break;
                                     }
-                                    // node = node.parent;
+                                    node = graph.get(cur).unwrap();
                                 }
                             }
                         },
