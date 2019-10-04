@@ -14,13 +14,15 @@ fn get_plain_queries(queries: Vec<&Fact>) -> Vec<Fact> {
 }
 
 fn infinite_rule_loop<'a>(graph: &Graph<Token<'a>>, mut cur: NodeIndex, ref_fact: &Fact) -> Result<(), Error> {
+    let mut has_appeared = false; // the fact should only appear once
     match graph.get(cur) {
         Some(mut node) => {
             while node.parent.is_some() {
                 if let Some(fact) = node.content.fact {
-                    if fact.letter == ref_fact.letter {
+                    if fact.letter == ref_fact.letter && has_appeared {
                         return Err(Error::new(ErrorKind::InvalidInput, "Tree builder (inf checker): INFINITE LOOP"))
                     }
+                    has_appeared = true; // ok it appeared once
                 }
                 cur = node.parent.unwrap();
                 node = graph.get(cur).unwrap();

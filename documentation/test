@@ -1,5 +1,5 @@
 A + B => D
-C => B
-B => C
-=
+F => B
+C + E => F
+=CE
 ?D
