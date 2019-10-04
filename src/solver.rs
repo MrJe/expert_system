@@ -1,7 +1,8 @@
 use crate::facts::Fact;
-use crate::graph::{Graph, NodeIndex};
+use crate::graph::{Graph, NodeIndex, Node};
 use crate::rules::{rule::token::Token, Rules};
 use crate::print::print_tree_to_file;
+use crate::checker;
 
 use std::io::{Error, ErrorKind};
 
@@ -13,25 +14,36 @@ fn get_plain_queries(queries: Vec<&Fact>) -> Vec<Fact> {
     solved_queries
 }
 
-fn infinite_rule_loop<'a>(graph: &Graph<Token<'a>>, mut cur: NodeIndex, ref_fact: &Fact) -> Result<(), Error> {
-    let mut has_appeared = false; // the fact should only appear once
-    match graph.get(cur) {
-        Some(mut node) => {
-            while node.parent.is_some() {
-                if let Some(fact) = node.content.fact {
-                    if fact.letter == ref_fact.letter && has_appeared {
-                        return Err(Error::new(ErrorKind::InvalidInput, "Tree builder (inf checker): INFINITE LOOP"))
-                    }
-                    has_appeared = true; // ok it appeared once
-                }
-                cur = node.parent.unwrap();
-                node = graph.get(cur).unwrap();
-            }
-            Ok(())
-        },
-        None => return Err(Error::new(ErrorKind::NotFound, "Tree builder (inf checker): no current node"))
-    }
-}
+
+// REFACTO WIP TODO
+// fn push_fact_rec<'a>(graph: &'a mut Graph<Token<'a>>, fact: &Fact, mut cur: NodeIndex, rules: &'a Rules, token: Token<'a>, node: &Node<Token<'a>>) -> Result<(), Error> {
+//     if node.lhs.is_none() {
+//         if fact.determined.get() == true {
+//             graph.insert_lhs(cur, token)?;
+//         } else {
+//             let sub_head = graph.insert_lhs(cur, token)?;
+//             checker::infinite_rule_loop(graph, sub_head, fact)?;
+//             generate_tree(graph, fact, sub_head, rules)?;
+//         }
+//     } else {
+//         while node.parent.is_some() {
+//             if node.rhs.is_some() {
+//                 cur = node.parent.unwrap();
+//             } else {
+//                 if fact.determined.get() == true {
+//                     graph.insert_rhs(cur, token)?;
+//                 } else {
+//                     let sub_head = graph.insert_rhs(cur, token)?;
+//                     checker::infinite_rule_loop(graph, sub_head, fact)?;
+//                     generate_tree(graph, fact, sub_head, rules)?;
+//                 }
+//                 break;
+//             }
+//             node = graph.get(cur).unwrap(); // danger
+//         }
+//     }
+//     Ok(())
+// }
 
 fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: NodeIndex, rules: &'a Rules) -> Result<(), Error> {
     for rule in rules.iter() {
@@ -42,13 +54,14 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                     cur = graph.insert_operand(cur, token)?;
                 } else if let Some(fact) = token.fact {
                     match graph.get(cur) {
-                        Some(mut node) => { // node: &Node
+                        // Some(mut node) => push_fact_rec(graph, fact, cur, rules, token, node)?, // node: &Node
+                        Some(mut node) => {
                             if node.lhs.is_none() {
                                 if fact.determined.get() == true {
                                     graph.insert_lhs(cur, token)?;
                                 } else {
                                     let sub_head = graph.insert_lhs(cur, token)?;
-                                    infinite_rule_loop(graph, sub_head, fact)?;
+                                    checker::infinite_rule_loop(graph, sub_head, fact)?;
                                     generate_tree(graph, fact, sub_head, rules)?;
                                 }
                             } else {
@@ -60,7 +73,7 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                                             graph.insert_rhs(cur, token)?;
                                         } else {
                                             let sub_head = graph.insert_rhs(cur, token)?;
-                                            infinite_rule_loop(graph, sub_head, fact)?;
+                                            checker::infinite_rule_loop(graph, sub_head, fact)?;
                                             generate_tree(graph, fact, sub_head, rules)?;
                                         }
                                         break;

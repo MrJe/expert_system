@@ -1,5 +1,7 @@
 use crate::rules::rule::{token::Token, Side};
-use crate::facts::Facts;
+use crate::facts::{Facts, Fact};
+use crate::graph::{Graph, NodeIndex};
+
 use std::io::{Error, ErrorKind};
 
 pub fn solved_queries(facts: &Facts) -> Result<(), Error> {
@@ -64,4 +66,22 @@ pub fn rule_composition(tokens: &Vec<Token>, line: &str) -> Result<(), Error> {
         }
     }
     Ok(())
+}
+
+pub fn infinite_rule_loop<'a>(graph: &Graph<Token<'a>>, mut cur: NodeIndex, ref_fact: &Fact) -> Result<(), Error> {
+    match graph.get(cur) {
+        Some(mut node) => {
+            while node.parent.is_some() {
+                cur = node.parent.unwrap();
+                node = graph.get(cur).unwrap();
+                if let Some(fact) = node.content.fact {
+                    if fact.letter == ref_fact.letter {
+                        return Err(Error::new(ErrorKind::InvalidInput, "Tree builder (inf checker): INFINITE LOOP"))
+                    }
+                }
+            }
+            Ok(())
+        },
+        None => return Err(Error::new(ErrorKind::NotFound, "Tree builder (inf checker): no current node"))
+    }
 }
