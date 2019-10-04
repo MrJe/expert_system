@@ -55,6 +55,13 @@ impl<'a> Token<'a> {
         }
     }
 
+    pub fn get_state(&self) -> bool {
+        match self.fact {
+            Some(fact) => fact.state.get(),
+            None       => false,
+        }
+    }
+
     pub fn get_op_char(&self) -> char {
         if let Some(op) = self.operand {
             return match op {
@@ -67,6 +74,14 @@ impl<'a> Token<'a> {
             };
         }
         '@'
+    }
+
+    pub fn get_token_char(&self) -> char {
+        if self.is_fact() == true {
+            self.fact.unwrap().letter
+        } else {
+            self.get_op_char()
+        }
     }
 
     pub fn print(&self) {

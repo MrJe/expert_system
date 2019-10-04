@@ -44,6 +44,10 @@ impl<T> Node<T> {
 		self.parent = Some(index);
 		Ok(index)
 	}
+
+	pub fn have_child(&self) -> bool {
+		self.lhs.is_some() | self.rhs.is_some()
+	}
 }
 
 #[derive(Clone, Debug)]
@@ -113,4 +117,8 @@ impl<T> Graph<T> {
 	pub fn len(&self) -> usize {
 		self.0.len()
 	}
+
+	pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
