@@ -1,4 +1,4 @@
-const OUTPUT_FILE: &str = "RESULT.txt";
+// const OUTPUT_FILE: &str = "RESULT.txt";
 
 use crate::facts::{Facts, Fact};
 use crate::rules::Rules;
@@ -53,7 +53,7 @@ fn expert_system(file: File) -> Result<Vec<Fact>, Error> {
 fn expert_system_wrapper(file: File) {
     match expert_system(file) {
         Ok(solved_queries) => {
-            print::solved_to_file(OUTPUT_FILE, &solved_queries);
+            // print::solved_to_file(OUTPUT_FILE, &solved_queries);
             print::results(&solved_queries);
         },
         Err(error) => println!(

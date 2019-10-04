@@ -1,5 +1,11 @@
-(A | B) + C => (D | E) + F
+A | B + C => D
 
 =BC
 
-?F
+?D
+
+# D   ->  |   ->  +   ->  C
+#                     ->  B
+#             ->  A
+# print_tree_to_file(&graph);
+# use crate::print::print_tree_to_file;

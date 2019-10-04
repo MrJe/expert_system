@@ -1,4 +1,6 @@
 use crate::facts::Fact;
+use crate::graph::{Graph};
+use crate::rules::{rule::token::Token};
 
 use std::fs::File;
 use std::io::{prelude::*, Error};
@@ -32,4 +34,10 @@ pub fn solved_to_file(fname: &str, solved_queries: &Vec<Fact>) -> Result<(), Err
     //     fname
     // );
     Ok(())
+}
+
+pub fn print_tree_to_file(graph: &Graph<Token>) {
+     for token in graph.iter() {
+         println!("coucou");
+     }
 }

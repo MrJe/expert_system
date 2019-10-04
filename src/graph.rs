@@ -1,4 +1,5 @@
 use std::io::{Error, ErrorKind};
+use core::slice::Iter;
 
 pub type NodeIndex = usize;
 
@@ -103,5 +104,13 @@ impl<T> Graph<T> {
 
 	pub fn get_mut(&mut self, key: NodeIndex) -> Option<&mut Node<T>> {
 		self.0.get_mut(key)
+	}
+
+	pub fn iter(&self) -> Iter<Node<T>> {
+        self.0.iter()
+    }
+
+	pub fn len(&self) -> usize {
+		self.0.len()
 	}
 }
