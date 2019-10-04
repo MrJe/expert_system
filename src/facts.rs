@@ -13,7 +13,7 @@ impl Fact {
     pub fn new(letter: char) -> Fact {
         Fact {
             state: Cell::new(false),
-            determined: Cell::new(true),
+            determined: Cell::new(false),
             queried: Cell::new(false),
             letter,
         }
