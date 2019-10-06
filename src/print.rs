@@ -36,42 +36,32 @@ pub fn solved_to_file(fname: &str, solved_queries: &Vec<Fact>) -> Result<(), Err
     Ok(())
 }
 
-pub fn print_tree_to_file(graph: &Graph<Token>) {
-    let mut spaces = 0;
-    let mut cur: NodeIndex = 0;
-    loop {
-        match graph.get(cur) {
-            Some(mut node)  => {
-                let t_char = node.content.get_token_char();
-                print!("{} -> ", t_char);
-                if node.lhs.is_some() {
-                    cur = node.lhs.unwrap();
-                    spaces += 5;
-                } else {
-                    println!("{}", node.content.get_state());
-                    while node.parent.is_some() {
-                        node = graph.get(node.parent.unwrap()).unwrap();
-                        spaces -= 3;
-                        let mut t_char_c = '@';
-                        if node.rhs.is_some() {
-                            let rhs_id = node.rhs.unwrap();
-                            t_char_c = graph.get(rhs_id).unwrap().content.get_token_char();
-                            if t_char_c != t_char {
-                                cur = node.rhs.unwrap();
-                                print!("{:<1$}-> ", "", spaces);
-                                break;
-                            }
-                        }
-                        if t_char_c == t_char {
-                            spaces += 1;
-                        }
-                    }
-                    if node.parent.is_some() == false {
-                        return ;
-                    }
+fn  print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
+    match graph.get(cur) {
+        None            => println!("Error: print_tree_rec() out of bounds."),
+        Some(mut node)  => {
+            let t_char = node.content.get_token_char();
+            print!("{} -> ", t_char);
+            if cur > 0 {
+                spaces += 5;
+            }
+            if node.lhs.is_some() {
+                print_tree_rec(graph, node.lhs.unwrap(), spaces);
+                if node.rhs.is_some() {
+                    print!("{:<1$}-> ", "", spaces);
+                    print_tree_rec(graph, node.rhs.unwrap(), spaces);
                 }
-            },
-            None            => break,
+            } else {
+                if node.content.is_fact() {
+                    println!("{}", node.content.get_state());
+                } else {
+                    println!("Error: last node isn't a fact.");
+                }
+            }
         }
     }
+}
+
+pub fn print_tree_to_file(graph: &Graph<Token>) {
+    print_tree_rec(graph, 0, 2);
 }

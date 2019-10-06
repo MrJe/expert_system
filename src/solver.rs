@@ -98,8 +98,8 @@ pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
         let mut graph: Graph<Token> = Graph::new();
         let root: NodeIndex = graph.add_query(Token::new_fact(&fact));
         generate_tree(&mut graph, fact, root, &rules)?;
-        println!("{:#?}", graph);
-        // print_tree_to_file(&graph);
+        // println!("{:#?}", graph);
+        print_tree_to_file(&graph);
     }
     // checker::solved_queries(&facts)?;
     Ok(get_plain_queries(queries))
