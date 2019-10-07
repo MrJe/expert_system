@@ -1,22 +1,28 @@
-use crate::rules::rule::{token::Token, Side};
-use crate::facts::{Facts, Fact};
+use crate::facts::{Fact, Facts};
 use crate::graph::{Graph, NodeIndex};
+use crate::rules::rule::{token::Token, Side};
 
 use std::io::{Error, ErrorKind};
 
 pub fn solved_queries(facts: &Facts) -> Result<(), Error> {
-    if facts.is_stable == false {
-        return Err(Error::new(ErrorKind::InvalidData, "(Solved) Queries: unstable ruleset"))
+    if !facts.is_stable {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "(Solved) Queries: unstable ruleset",
+        ));
     }
     for fact in facts.fact_arr.iter() {
-        if fact.queried.get() == true && fact.determined.get() == false {
-            return Err(Error::new(ErrorKind::InvalidData, "(Solved) Queries: undetermined fact"))
+        if fact.queried.get() && !fact.determined.get() {
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "(Solved) Queries: undetermined fact",
+            ));
         }
     }
     Ok(())
 }
 
-pub fn impliance(side: &mut Side, &c: &char) -> Result<(), Error> {
+pub fn impliance(side: &mut Side, c: char) -> Result<(), Error> {
     if *side == Side::Rhs {
         return Err(Error::new(
             ErrorKind::InvalidData,
@@ -44,7 +50,7 @@ pub fn impliance(side: &mut Side, &c: &char) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn rule_composition(tokens: &Vec<Token>, line: &str) -> Result<(), Error> {
+pub fn rule_composition(tokens: &[Token], line: &str) -> Result<(), Error> {
     let mut last = &Token::new(None, None);
     for token in tokens {
         if !last.is_empty() {
@@ -68,7 +74,11 @@ pub fn rule_composition(tokens: &Vec<Token>, line: &str) -> Result<(), Error> {
     Ok(())
 }
 
-pub fn infinite_rule_loop<'a>(graph: &Graph<Token<'a>>, mut cur: NodeIndex, ref_fact: &Fact) -> Result<(), Error> {
+pub fn infinite_rule_loop<'a>(
+    graph: &Graph<Token<'a>>,
+    mut cur: NodeIndex,
+    ref_fact: &Fact,
+) -> Result<(), Error> {
     match graph.get(cur) {
         Some(mut node) => {
             while node.parent.is_some() {
@@ -76,12 +86,18 @@ pub fn infinite_rule_loop<'a>(graph: &Graph<Token<'a>>, mut cur: NodeIndex, ref_
                 node = graph.get(cur).unwrap();
                 if let Some(fact) = node.content.fact {
                     if fact.letter == ref_fact.letter {
-                        return Err(Error::new(ErrorKind::InvalidInput, "Tree builder (inf checker): INFINITE LOOP"))
+                        return Err(Error::new(
+                            ErrorKind::InvalidInput,
+                            "Tree builder (inf checker): INFINITE LOOP",
+                        ));
                     }
                 }
             }
             Ok(())
-        },
-        None => return Err(Error::new(ErrorKind::NotFound, "Tree builder (inf checker): no current node"))
+        }
+        None => Err(Error::new(
+            ErrorKind::NotFound,
+            "Tree builder (inf checker): no current node",
+        )),
     }
 }

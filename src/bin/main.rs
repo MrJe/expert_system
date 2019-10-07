@@ -1,5 +1,5 @@
-use std::env;
 use lib::expert_system::run_ep;
+use std::env;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

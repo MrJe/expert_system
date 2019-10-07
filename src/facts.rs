@@ -1,7 +1,7 @@
 use std::cell::Cell;
 use std::io::{Error, ErrorKind};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Fact {
     pub state: Cell<bool>,
     pub determined: Cell<bool>,
@@ -10,7 +10,7 @@ pub struct Fact {
 }
 
 impl Fact {
-    pub fn new(letter: char) -> Fact {
+    pub fn new(letter: char) -> Self {
         Fact {
             state: Cell::new(false),
             determined: Cell::new(false),
@@ -19,23 +19,24 @@ impl Fact {
         }
     }
 
-    pub fn copy(&self) -> Fact {
+    pub fn copy(&self) -> Self {
         Fact {
             state: Cell::new(self.state.get()),
             determined: Cell::new(self.determined.get()),
             queried: Cell::new(self.queried.get()),
-            letter : self.letter,
+            letter: self.letter,
         }
     }
 }
 
+#[derive(Default)]
 pub struct Facts {
     pub fact_arr: [Fact; 26],
     pub is_stable: bool,
 }
 
 impl Facts {
-    pub fn new() -> Facts {
+    pub fn new() -> Self {
         let arr = [
             Fact::new('A'),
             Fact::new('B'),
@@ -85,7 +86,7 @@ impl Facts {
             match c {
                 'A'..='Z' => {
                     let fact = &self.fact_arr[self.get_index(c)];
-                    if fact.state.get() == true {
+                    if fact.state.get() {
                         return Err(Error::new(ErrorKind::InvalidData, "Initial facts: doublon"));
                     }
                     fact.state.set(true);
@@ -114,7 +115,7 @@ impl Facts {
             match c {
                 'A'..='Z' => {
                     let fact = &self.fact_arr[self.get_index(c)];
-                    if fact.queried.get() == true {
+                    if fact.queried.get() {
                         return Err(Error::new(ErrorKind::InvalidData, "Queries: doublon"));
                     }
                     fact.queried.set(true);

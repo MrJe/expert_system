@@ -1,8 +1,8 @@
-use crate::facts::Fact;
-use crate::graph::{Graph, NodeIndex, Node};
-use crate::rules::{rule::token::Token, Rules};
-use crate::print::print_tree_to_file;
 use crate::checker;
+use crate::facts::Fact;
+use crate::graph::{Graph, NodeIndex};
+use crate::print::print_tree_to_file;
+use crate::rules::{rule::token::Token, Rules};
 
 use std::io::{Error, ErrorKind};
 
@@ -13,7 +13,6 @@ fn get_plain_queries(queries: Vec<&Fact>) -> Vec<Fact> {
     }
     solved_queries
 }
-
 
 // REFACTO WIP TODO
 // fn push_fact_rec<'a>(graph: &'a mut Graph<Token<'a>>, fact: &Fact, mut cur: NodeIndex, rules: &'a Rules, token: Token<'a>, node: &Node<Token<'a>>) -> Result<(), Error> {
@@ -45,11 +44,16 @@ fn get_plain_queries(queries: Vec<&Fact>) -> Vec<Fact> {
 //     Ok(())
 // }
 
-fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: NodeIndex, rules: &'a Rules) -> Result<(), Error> {
+fn generate_tree<'a>(
+    graph: &mut Graph<Token<'a>>,
+    queried: &Fact,
+    mut cur: NodeIndex,
+    rules: &'a Rules,
+) -> Result<(), Error> {
     for rule in rules.iter() {
         if rule.implies_fact(queried) {
             for token in rule.lhs.iter() {
-                let token = token.clone();
+                let token = *token;
                 if token.is_operand() {
                     cur = graph.insert_operand(cur, token)?;
                 } else if let Some(fact) = token.fact {
@@ -57,7 +61,7 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                         // Some(mut node) => push_fact_rec(graph, fact, cur, rules, token, node)?, // node: &Node
                         Some(mut node) => {
                             if node.lhs.is_none() {
-                                if fact.determined.get() == true {
+                                if fact.determined.get() {
                                     graph.insert_lhs(cur, token)?;
                                 } else {
                                     let sub_head = graph.insert_lhs(cur, token)?;
@@ -69,7 +73,7 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                                     if node.rhs.is_some() {
                                         cur = node.parent.unwrap();
                                     } else {
-                                        if fact.determined.get() == true {
+                                        if fact.determined.get() {
                                             graph.insert_rhs(cur, token)?;
                                         } else {
                                             let sub_head = graph.insert_rhs(cur, token)?;
@@ -81,11 +85,19 @@ fn generate_tree<'a>(graph: &mut Graph<Token<'a>>, queried: &Fact, mut cur: Node
                                     node = graph.get(cur).unwrap(); // danger
                                 }
                             }
-                        },
-                        None => return Err(Error::new(ErrorKind::NotFound, "Tree builder: no current node"))
+                        }
+                        None => {
+                            return Err(Error::new(
+                                ErrorKind::NotFound,
+                                "Tree builder: no current node",
+                            ))
+                        }
                     }
                 } else {
-                    return Err(Error::new(ErrorKind::InvalidData, "Tree builder: empty Token"))
+                    return Err(Error::new(
+                        ErrorKind::InvalidData,
+                        "Tree builder: empty Token",
+                    ));
                 }
             }
         }

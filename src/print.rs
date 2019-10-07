@@ -1,30 +1,32 @@
 use crate::facts::Fact;
 use crate::graph::{Graph, NodeIndex};
-use crate::rules::{rule::token::Token};
+use crate::rules::rule::token::Token;
 
 use std::fs::File;
 use std::io::{prelude::*, Error};
 
-pub fn results(solved_queries: &Vec<Fact>) {
+pub fn results(solved_queries: &[Fact]) {
     println!("Everything worked as expected, here are the results:");
     for fact in solved_queries.iter() {
         print!("{}", fact.letter);
-        match fact.state.get() {
-            true => println!(" = TRUE"),
-            false => println!(" = FALSE"),
+        if fact.state.get() {
+            println!(" = TRUE");
+        } else {
+            println!(" = FALSE");
         }
     }
 }
 
-pub fn solved_to_file(fname: &str, solved_queries: &Vec<Fact>) -> Result<(), Error> {
+pub fn solved_to_file(fname: &str, solved_queries: &[Fact]) -> Result<(), Error> {
     let mut f = File::create(fname)?;
     let mut fcontents = String::new();
     for fact in solved_queries.iter() {
-        if fact.queried.get() == true {
+        if fact.queried.get() {
             fcontents.push(fact.letter);
-            match fact.state.get() {
-                true => fcontents.push_str(" = TRUE\n"),
-                false => fcontents.push_str(" = FALSE\n"),
+            if fact.state.get() {
+                fcontents.push_str(" = TRUE\n");
+            } else {
+                fcontents.push_str(" = FALSE\n");
             }
         }
     }
@@ -36,10 +38,10 @@ pub fn solved_to_file(fname: &str, solved_queries: &Vec<Fact>) -> Result<(), Err
     Ok(())
 }
 
-fn  print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
+fn print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
     match graph.get(cur) {
-        None            => println!("Error: print_tree_rec() out of bounds."),
-        Some(mut node)  => {
+        None => println!("Error: print_tree_rec() out of bounds."),
+        Some(node) => {
             let t_char = node.content.get_token_char();
             print!("{} -> ", t_char);
             if cur > 0 {
@@ -51,12 +53,10 @@ fn  print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
                     print!("{:<1$}-> ", "", spaces);
                     print_tree_rec(graph, node.rhs.unwrap(), spaces);
                 }
+            } else if node.content.is_fact() {
+                println!("{}", node.content.get_state());
             } else {
-                if node.content.is_fact() {
-                    println!("{}", node.content.get_state());
-                } else {
-                    println!("Error: last node isn't a fact.");
-                }
+                println!("Error: last node isn't a fact.");
             }
         }
     }

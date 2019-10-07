@@ -1,9 +1,5 @@
 //use lib::graph::{ Node, Graph };
 
-
-
-
-
 /*
 A | B + C => D
 npi: A B C + |

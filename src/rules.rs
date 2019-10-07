@@ -2,18 +2,15 @@ pub mod rule;
 
 use crate::checker;
 use crate::facts::Facts;
+use core::slice::Iter;
 use rule::{token::Operand, Rule, Side};
 use std::io::{Error, ErrorKind};
-use core::slice::Iter;
 
-// pub struct Rules<'rules> {
-//     pub rules: Vec<Rule<'rules>>,
-// }
-
+#[derive(Default)]
 pub struct Rules<'rules>(Vec<Rule<'rules>>);
 
 impl<'rules> Rules<'rules> {
-    pub fn new() -> Rules<'rules> {
+    pub fn new() -> Self {
         Rules(Vec::new())
     }
 
@@ -26,23 +23,23 @@ impl<'rules> Rules<'rules> {
                 if side == Side::Bidirectional {
                     rule.is_equivalent = true;
                 }
-                checker::impliance(&mut side, &c)?;
+                checker::impliance(&mut side, c)?;
                 continue;
             }
             if c.is_whitespace() {
                 continue;
             } else if c.is_uppercase() {
-                rule.push(&side, None, Some(facts.get(c)));
+                rule.push(side, None, Some(facts.get(c)));
             } else {
                 match c {
-                    '(' => rule.push(&side, Some(Operand::Opening), None),
-                    ')' => rule.push(&side, Some(Operand::Closing), None),
-                    '!' => rule.push(&side, Some(Operand::Not), None),
-                    '|' => rule.push(&side, Some(Operand::Or), None),
-                    '^' => rule.push(&side, Some(Operand::Xor), None),
-                    '+' => rule.push(&side, Some(Operand::And), None),
+                    '(' => rule.push(side, Some(Operand::Opening), None),
+                    ')' => rule.push(side, Some(Operand::Closing), None),
+                    '!' => rule.push(side, Some(Operand::Not), None),
+                    '|' => rule.push(side, Some(Operand::Or), None),
+                    '^' => rule.push(side, Some(Operand::Xor), None),
+                    '+' => rule.push(side, Some(Operand::And), None),
                     '#' => break,
-                    '<' | '=' => checker::impliance(&mut side, &c)?,
+                    '<' | '=' => checker::impliance(&mut side, c)?,
                     _ => {
                         return Err(Error::new(
                             ErrorKind::InvalidData,
@@ -68,9 +65,9 @@ impl<'rules> Rules<'rules> {
         self.0.iter()
     }
 
-    pub fn to_reverse_polish_notation(&mut self) -> Result<(), Error> {
+    pub fn as_reverse_polish_notation(&mut self) -> Result<(), Error> {
         for rule in self.0.iter_mut() {
-            rule.to_rpn()?;
+            rule.as_rpn()?;
         }
         Ok(())
     }
@@ -80,6 +77,6 @@ impl<'rules> Rules<'rules> {
         for rule in &self.0 {
             rule.print();
         }
-        print!("\n");
+        println!();
     }
 }

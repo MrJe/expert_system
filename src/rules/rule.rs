@@ -1,5 +1,4 @@
 pub mod rpn;
-pub mod solver;
 pub mod token;
 
 use crate::facts::Fact;
@@ -15,6 +14,7 @@ pub enum Side {
 }
 
 // type Rule<'rule> = Vec<Token<'rule>>
+#[derive(Default)]
 pub struct Rule<'rule> {
     pub lhs: Vec<Token<'rule>>,
     pub rhs: Vec<Token<'rule>>,
@@ -22,7 +22,7 @@ pub struct Rule<'rule> {
 }
 
 impl<'rule> Rule<'rule> {
-    pub fn new() -> Rule<'rule> {
+    pub fn new() -> Self {
         Rule {
             lhs: Vec::new(),
             rhs: Vec::new(),
@@ -30,15 +30,15 @@ impl<'rule> Rule<'rule> {
         }
     }
 
-    pub fn to_rpn(&mut self) -> Result<(), Error> {
+    pub fn as_rpn(&mut self) -> Result<(), Error> {
         self.lhs = rpn::apply_on_vec(&self.lhs)?;
         self.lhs.reverse(); // WIP GRAPH BROWSING
         self.rhs = rpn::apply_on_vec(&self.rhs)?;
         Ok(())
     }
 
-    pub fn push(&mut self, side: &Side, operand: Option<Operand>, fact: Option<&'rule Fact>) {
-        if *side == Side::Lhs {
+    pub fn push(&mut self, side: Side, operand: Option<Operand>, fact: Option<&'rule Fact>) {
+        if side == Side::Lhs {
             self.lhs.push(Token::new(operand, fact));
         } else {
             self.rhs.push(Token::new(operand, fact));
@@ -49,7 +49,7 @@ impl<'rule> Rule<'rule> {
         for token in self.rhs.iter() {
             if let Some(fact) = token.fact {
                 if fact.letter == implied_fact.letter {
-                    return true
+                    return true;
                 }
             }
         }
@@ -60,13 +60,14 @@ impl<'rule> Rule<'rule> {
         for token in &self.lhs {
             token.print();
         }
-        match self.is_equivalent {
-            true => print!("<=> "),
-            false => print!("=> "),
+        if self.is_equivalent {
+            print!("<=> ");
+        } else {
+            print!("=> ");
         }
         for token in &self.rhs {
             token.print();
         }
-        print!("\n");
+        println!();
     }
 }

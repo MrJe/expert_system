@@ -22,11 +22,17 @@ impl<'a> Token<'a> {
     }
 
     pub fn new_op(operand: Operand) -> Token<'a> {
-        Token { operand: Some(operand), fact: None }
+        Token {
+            operand: Some(operand),
+            fact: None,
+        }
     }
 
     pub fn new_fact(fact: &'a Fact) -> Token<'a> {
-        Token { operand: None, fact: Some(fact) }
+        Token {
+            operand: None,
+            fact: Some(fact),
+        }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -58,7 +64,7 @@ impl<'a> Token<'a> {
     pub fn get_state(&self) -> bool {
         match self.fact {
             Some(fact) => fact.state.get(),
-            None       => false,
+            None => false,
         }
     }
 
@@ -77,7 +83,7 @@ impl<'a> Token<'a> {
     }
 
     pub fn get_token_char(&self) -> char {
-        if self.is_fact() == true {
+        if self.is_fact() {
             self.fact.unwrap().letter
         } else {
             self.get_op_char()
@@ -106,17 +112,9 @@ impl<'a> Token<'a> {
 
     pub fn cmp_tok(&self, tok: &Token) -> bool {
         if self.fact.is_some() && tok.fact.is_some() {
-            if self.fact.unwrap().letter == tok.fact.unwrap().letter {
-                    return true
-            } else {
-                return false
-            }
+            return self.fact.unwrap().letter == tok.fact.unwrap().letter;
         } else if self.operand.is_some() && tok.operand.is_some() {
-            if self.operand.unwrap() == tok.operand.unwrap() {
-                return true
-            } else {
-                return false
-            }
+            return self.operand.unwrap() == tok.operand.unwrap();
         }
         false
     }
