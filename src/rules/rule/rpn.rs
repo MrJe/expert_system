@@ -85,7 +85,7 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
         unstack_to_opening(ret, tmp)?;
         return Ok(());
     }
-    if op != Operand::Opening
+    if op != Operand::Opening && op != Operand::Not
         && !tmp.is_empty()
         && op_priority(op) >= op_priority(*tmp.last().unwrap())
     {

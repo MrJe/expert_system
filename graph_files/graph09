@@ -1,0 +1,15 @@
+A + B => X
+C ^ D => B
+E | F => D
+G + H => F
+I ^ J => H
+K | L => J
+M + N => L
+O ^ P => N
+Q | R => P
+S + T => R
+U ^ V => T
+
+=AC
+
+?X
