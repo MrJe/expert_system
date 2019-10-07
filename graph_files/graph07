@@ -1,0 +1,13 @@
+A ^ (B | C) + D => E
+X               => A
+Y               => X
+Z               => Y
+F + G | H + I   => Z
+J ^ K ^ L | M   => D
+N               => M
+O               => N
+P + Q           => O
+
+=PQ
+
+?E
