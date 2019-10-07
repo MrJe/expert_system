@@ -22,8 +22,8 @@ fn tokenise_str<'rule>(arg: &str, facts: &'rule Vec<Fact>) -> Vec<Token<'rule>> 
     for c in arg.chars() {
         match c {
             ' ' | '\t' => continue,
-            'A'..='Z' => ret.push(Token::new(None, Some(&facts[c as usize - 65]))),
-            _ => ret.push(Token::new(Some(get_operand(c)), None)),
+            'A'..='Z' => ret.push(Token::new_fact(&facts[c as usize - 65])),
+            _ => ret.push(Token::new_op(get_operand(c))),
         }
     }
     ret

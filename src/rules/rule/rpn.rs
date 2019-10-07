@@ -23,7 +23,7 @@ pub fn apply_on_vec<'rule>(tokens: &[Token<'rule>]) -> Result<Vec<Token<'rule>>,
                     "Rpn: brackets do not match (closing missing)",
                 ));
             }
-            ret.push(Token::new(Some(*last), None));
+            ret.push(Token::new_op(*last));
             tmp.pop();
         } else {
             panic!("apply_on_vec(): tmp contain invalid Operand");
@@ -55,7 +55,7 @@ fn unstack_to_opening(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>) -> Result<()
                 "Rpn: brackets do not match (opening missing)",
             ));
         }
-        ret.push(Token::new(Some(last), None));
+        ret.push(Token::new_op(last));
     }
     Ok(())
 }
@@ -65,7 +65,7 @@ fn unstack_with_lvl(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) {
         let last = *tmp.last().unwrap();
         tmp.pop();
 
-        ret.push(Token::new(Some(last), None));
+        ret.push(Token::new_op(last));
         if let Some(last) = tmp.last() {
             if op_priority(op) < op_priority(*last) {
                 break;
