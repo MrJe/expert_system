@@ -1,25 +1,25 @@
 pub mod common;
-use lib::expert_system::run_ep;
+use lib::expert_system;
 
 use std::io::Error;
 
 #[test]
 fn empty_file() -> Result<(), Error> {
-    run_ep("");
+    expert_system::run("");
     Ok(())
 }
 #[test]
 fn file_doesnt_exist() -> Result<(), Error> {
-    run_ep("Voldemort");
+    expert_system::run("Voldemort");
     Ok(())
 }
 #[test]
 fn is_directory() -> Result<(), Error> {
-    run_ep("src");
+    expert_system::run("src");
     Ok(())
 }
 #[test]
 fn no_rights() -> Result<(), Error> {
-    run_ep("/.file");
+    expert_system::run("/.file");
     Ok(())
 }

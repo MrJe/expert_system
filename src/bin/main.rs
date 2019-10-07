@@ -1,4 +1,4 @@
-use lib::expert_system::run_ep;
+use lib::expert_system;
 use std::env;
 
 fn main() {
@@ -7,6 +7,6 @@ fn main() {
     if args.len() != 2 {
         println!("usage: ./expert_system input_file");
     } else {
-        run_ep(&args[1]);
+        expert_system::run(&args[1]);
     }
 }

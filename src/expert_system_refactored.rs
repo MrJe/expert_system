@@ -3,7 +3,7 @@
 use crate::facts::{Fact, Facts};
 use crate::print;
 use crate::rules::Rules;
-use crate::solver;
+use crate::solver_refactored;
 
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
@@ -46,7 +46,7 @@ fn expert_system(file: File) -> Result<Vec<Fact>, Error> {
     let mut rules = parser(file, &facts)?;
     rules.as_reverse_polish_notation()?;
     let queries = queries_of_parsed(&facts);
-    let solved_queries: Vec<Fact> = solver::solve(queries, rules)?;
+    let solved_queries: Vec<Fact> = solver_refactored::solve(queries, rules)?;
     Ok(solved_queries)
 }
 

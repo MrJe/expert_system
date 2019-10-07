@@ -48,6 +48,7 @@ fn push_rec<'a>(mut graph: Graph<Token<'a>>, rules: &'a Rules, token: Token<'a>,
                         break;
                     } else if let Some(fact) = token.fact {
                         graph = push_fact(graph, rules, token, fact, cur, Side::Rhs)?;
+                        break;
                     }
                     node = graph.get(*cur).unwrap(); // danger
                 }
