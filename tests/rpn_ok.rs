@@ -65,7 +65,31 @@ fn test_rpn_07() -> Result<(), Error> {
     run_test(expr, rslt, true)
 }
 #[test]
+fn test_rpn_08() -> Result<(), Error> {
+    let expr: &str = "A + !B";
+    let rslt: &str = "A B ! +";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_09() -> Result<(), Error> {
+    let expr: &str = "!!!A";
+    let rslt: &str = "A ! ! !";
+    run_test(expr, rslt, true)
+}
+#[test]
 fn test_rpn_10() -> Result<(), Error> {
+    let expr: &str = "!!(!A + !B)";
+    let rslt: &str = "A ! B ! + ! !";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_11() -> Result<(), Error> {
+    let expr: &str = "A ^ !!(B | !C) + D";
+    let rslt: &str = "A B C ! | ! ! D + ^";
+    run_test(expr, rslt, true)
+}
+#[test]
+fn test_rpn_12() -> Result<(), Error> {
     let expr: &str = "A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z";
     let rslt: &str = "A B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z |";
     run_test(expr, rslt, true)
