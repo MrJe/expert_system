@@ -2,17 +2,9 @@ use crate::checker;
 use crate::facts::Fact;
 use crate::graph::{Graph, NodeIndex};
 use crate::print::print_tree_to_file;
-use crate::rules::{rule::token::Token, Rules};
+use crate::rules::{rule::token::{Token, Operand}, Rules};
 
 use std::io::{Error, ErrorKind};
-
-fn get_plain_queries(queries: Vec<&Fact>) -> Vec<Fact> {
-    let mut solved_queries = Vec::new();
-    for fact in queries.iter() {
-        solved_queries.push(fact.copy());
-    }
-    solved_queries
-}
 
 fn push_operand_rec<'a>(mut graph: Graph<Token<'a>>, token: Token<'a>, cur: &mut NodeIndex) -> Result<Graph<Token<'a>>, Error> {
     match graph.get(*cur) {
@@ -23,7 +15,7 @@ fn push_operand_rec<'a>(mut graph: Graph<Token<'a>>, token: Token<'a>, cur: &mut
                 *cur = graph.insert_rhs(*cur, token)?;
             } else {
                 while node.parent.is_some() {
-                    if node.rhs.is_some() {
+                    if node.rhs.is_some() || node.content.operand == Some(Operand::Not) {
                         *cur = node.parent.unwrap();
                     } else {
                         *cur = graph.insert_rhs(*cur, token)?;
@@ -43,7 +35,6 @@ fn push_operand_rec<'a>(mut graph: Graph<Token<'a>>, token: Token<'a>, cur: &mut
     }
 }
 
-// REFACTO WIP TODO
 fn push_fact_rec<'a>(mut graph: Graph<Token<'a>>, rules: &'a Rules, token: Token<'a>, fact: &Fact, cur: &mut NodeIndex) -> Result<Graph<Token<'a>>, Error> {
     match graph.get(*cur) {
         Some(mut node) => {
@@ -57,7 +48,7 @@ fn push_fact_rec<'a>(mut graph: Graph<Token<'a>>, rules: &'a Rules, token: Token
                 }
             } else {
                 while node.parent.is_some() {
-                    if node.rhs.is_some() {
+                    if node.rhs.is_some() || node.content.operand == Some(Operand::Not) {
                         *cur = node.parent.unwrap();
                     } else {
                         if fact.determined.get() == true {
@@ -109,6 +100,14 @@ fn generate_tree<'a>(
     Ok(graph)
 }
 
+fn get_plain_solved_queries(queries: Vec<&Fact>) -> Vec<Fact> {
+    let mut solved_queries = Vec::new();
+    for fact in queries.iter() {
+        solved_queries.push(fact.copy());
+    }
+    solved_queries
+}
+
 pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
     for fact in queries.iter() {
         let mut graph: Graph<Token> = Graph::new();
@@ -118,5 +117,5 @@ pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
         print_tree_to_file(&graph);
     }
     // checker::solved_queries(&facts)?;
-    Ok(get_plain_queries(queries))
+    Ok(get_plain_solved_queries(queries))
 }
