@@ -55,7 +55,31 @@ fn generate_tree<'a>(
             for token in rule.lhs.iter() {
                 let token = *token;
                 if token.is_operand() {
-                    cur = graph.insert_operand(cur, token)?;
+                    match graph.get(cur) {
+                        Some(mut node) => {
+                            if node.lhs.is_none() {
+                                cur = graph.insert_lhs(cur, token)?;
+                            } else if node.rhs.is_none() {
+                                cur = graph.insert_rhs(cur, token)?;
+                            } else {
+                                while node.parent.is_some() {
+                                    if node.rhs.is_some() {
+                                        cur = node.parent.unwrap();
+                                    } else {
+                                        cur = graph.insert_rhs(cur, token)?;
+                                        break;
+                                    }
+                                    node = graph.get(cur).unwrap(); // danger
+                                }
+                            }
+                        },
+                        None => {
+                            return Err(Error::new(
+                                ErrorKind::NotFound,
+                                "Tree builder: no current node to push operand",
+                            ))
+                        }
+                    }
                 } else if let Some(fact) = token.fact {
                     match graph.get(cur) {
                         // Some(mut node) => push_fact_rec(graph, fact, cur, rules, token, node)?, // node: &Node
@@ -89,7 +113,7 @@ fn generate_tree<'a>(
                         None => {
                             return Err(Error::new(
                                 ErrorKind::NotFound,
-                                "Tree builder: no current node",
+                                "Tree builder: no current node to push fact",
                             ))
                         }
                     }

@@ -104,30 +104,6 @@ impl<T> Graph<T> {
         ))
     }
 
-    pub fn insert_operand(&mut self, current: NodeIndex, content: T) -> Result<NodeIndex, Error> {
-        let new_node_index = self.push(content, Some(current));
-        if let Some(node) = self.get_mut(current) {
-            match node.set_lhs(new_node_index) {
-                Ok(child_index) => return Ok(child_index),
-                Err(_) => match node.set_rhs(new_node_index) {
-                    Ok(child_index) => return Ok(child_index),
-                    Err(_) => {
-                        self.0.pop();
-                        return Err(Error::new(
-                            ErrorKind::InvalidData,
-                            "Graph: node already filled",
-                        ));
-                    }
-                },
-            }
-        }
-        self.0.pop();
-        Err(Error::new(
-            ErrorKind::InvalidData,
-            "Graph: node index not exist",
-        ))
-    }
-
     pub fn get(&self, key: NodeIndex) -> Option<&Node<T>> {
         self.0.get(key)
     }
