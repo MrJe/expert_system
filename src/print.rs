@@ -62,6 +62,6 @@ fn print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
     }
 }
 
-pub fn print_tree_to_file(graph: &Graph<Token>) {
+pub fn tree_to_file(graph: &Graph<Token>) {
     print_tree_rec(graph, 0, 2);
 }
