@@ -36,8 +36,8 @@ fn op_priority(op: Operand) -> u8 {
     match op {
         Operand::Not => 1,
         Operand::And => 2,
-        Operand::Xor => 3,
-        Operand::Or => 4,
+        Operand::Or  => 3,
+        Operand::Xor => 4,
         _ => 5,
     }
 }

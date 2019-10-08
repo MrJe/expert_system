@@ -19,7 +19,7 @@ fn test_rpn_complexe() -> Result<(), Error> {
 #[test]
 fn test_rpn_00() -> Result<(), Error> {
     let expr: &str = "A ^ B + C | D";
-    let rslt: &str = "A B C + ^ D |";
+    let rslt: &str = "A B C + D | ^";
     run_test(expr, rslt, true)
 }
 #[test]
@@ -37,7 +37,7 @@ fn test_rpn_02() -> Result<(), Error> {
 #[test]
 fn test_rpn_03() -> Result<(), Error> {
     let expr: &str = "A + B | C ^ (A ^ !C)";
-    let rslt: &str = "A B + C A C ! ^ ^ |";
+    let rslt: &str = "A B + C | A C ! ^ ^";
     run_test(expr, rslt, true)
 }
 #[test]
