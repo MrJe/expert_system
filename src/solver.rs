@@ -1,11 +1,10 @@
+use std::io::{Error, ErrorKind};
 
-use std::io::{Error};
-
-use crate::print;
 use crate::facts::Fact;
-use crate::tree_builder;
 use crate::graph::{Graph, NodeIndex};
-use crate::rules::{rule::token::{Token, Operand}, Rules};
+use crate::print;
+use crate::rules::{rule::token::{Operand, Token}, Rules};
+use crate::tree_builder;
 
 fn get_plain_solved_queries(queries: Vec<&Fact>) -> Vec<Fact> {
     let mut solved_queries = Vec::new();
@@ -15,26 +14,37 @@ fn get_plain_solved_queries(queries: Vec<&Fact>) -> Vec<Fact> {
     solved_queries
 }
 
-fn resolve_tree(graph: &Graph<Token>, cur: NodeIndex) -> bool {
+fn compute(operand: Operand, lhs: bool, rhs: bool) -> bool {
+    return match operand {
+        Operand::Not    => !lhs,
+        Operand::And    => lhs & rhs,
+        Operand::Or     => lhs | rhs,
+        Operand::Xor    => lhs ^ rhs,
+        _               => panic!("Error: () in tree_solver()."),
+    }
+}
+
+fn tree_solver(graph: &Graph<Token>, cur: NodeIndex) -> Result<bool, Error> {
     match graph.get(cur) {
-        None => panic!("Error: print_tree_rec() out of bounds."),
         Some(node) => {
-            let c = node.content;
-            if c.is_fact() {
-                if node.lhs.is_some() == false {
-                    return c.get_state()
+            let token = node.content;
+            if let Some(fact) = token.fact {
+                if let Some(node_index) = node.lhs {
+                    return tree_solver(graph, node_index)
                 }
-                return resolve_tree(graph, node.lhs.unwrap())
-            } else {
-                let lhs = node.lhs.unwrap();
-                if c.operand.unwrap() != Operand::Not {
-                    let rhs = node.rhs.unwrap();
-                    return c.resolve_op(resolve_tree(graph, lhs),
-                                        resolve_tree(graph, rhs))
+                return Ok(fact.state.get())
+            } else if let Some(op) = token.operand {
+                if let Some(lhs) = node.lhs {
+                    if op == Operand::Not {
+                        return Ok(!tree_solver(graph, lhs)?)
+                    } else if let Some(rhs) = node.rhs {
+                        return Ok(compute(op, tree_solver(graph, lhs)?, tree_solver(graph, rhs)?));
+                    }
                 }
-                return !resolve_tree(graph, lhs)
             }
-        }
+            return Err(Error::new(ErrorKind::InvalidData, "Tree solver: empty token"))
+        },
+        None => panic!("Error: print_tree_rec() out of bounds.")
     }
 }
 
@@ -43,13 +53,7 @@ pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
         let mut graph: Graph<Token> = Graph::new();
         let root: NodeIndex = graph.add_query(Token::new_fact(&fact));
         graph = tree_builder::generate(graph, fact, root, &rules)?;
-        // println!("{:#?}", graph);
-        let mut res = resolve_tree(&graph, 0);
-        if fact.reverse_state.get() {
-            res = !res;
-            fact.reverse_state.set(false);
-        }
-        fact.state.set(res);
+        fact.set_solved(tree_solver(&graph, 0)?);
         print::tree_to_file(&graph);
     }
     // checker::solved_queries(&facts)?;

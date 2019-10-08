@@ -81,7 +81,7 @@ impl<T> Graph<T> {
         }
         self.0.pop();
         Err(Error::new(
-            ErrorKind::InvalidData,
+            ErrorKind::NotFound,
             "Graph: node index not exist",
         ))
     }
@@ -99,7 +99,7 @@ impl<T> Graph<T> {
         }
         self.0.pop();
         Err(Error::new(
-            ErrorKind::InvalidData,
+            ErrorKind::NotFound,
             "Graph: node index not exist",
         ))
     }

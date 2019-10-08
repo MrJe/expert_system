@@ -82,19 +82,6 @@ impl<'a> Token<'a> {
         self.fact.unwrap().letter
     }
 
-    pub fn resolve_op(&self, lhs: bool, rhs: bool) -> bool {
-        if let Some(op) = self.operand {
-            return match op {
-                Operand::Not    => !lhs,
-                Operand::And    => lhs & rhs,
-                Operand::Or     => lhs | rhs,
-                Operand::Xor    => lhs ^ rhs,
-                _               => panic!("Error: () in resolve_tree()."),
-            };
-        }
-        self.fact.unwrap().state.get()
-    }
-
     pub fn get_token_char(&self) -> char {
         if self.is_fact() {
             self.fact.unwrap().letter

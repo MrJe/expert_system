@@ -30,6 +30,17 @@ impl Fact {
             letter: self.letter,
         }
     }
+
+    pub fn set_solved(&self, mut expr_result: bool) {
+        if self.reverse_state.get() {
+            expr_result = !expr_result;
+            self.reverse_state.set(false);
+        }
+        self.state.set(expr_result);
+        if expr_result {
+            self.determined.set(true);
+        }
+    }
 }
 
 #[derive(Default)]
