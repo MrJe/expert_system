@@ -4,6 +4,7 @@ use std::io::{Error, ErrorKind};
 #[derive(Clone, Debug, Default)]
 pub struct Fact {
     pub state: Cell<bool>,
+    pub reverse_state: Cell<bool>,
     pub determined: Cell<bool>,
     pub queried: Cell<bool>,
     pub letter: char,
@@ -13,6 +14,7 @@ impl Fact {
     pub fn new(letter: char) -> Self {
         Fact {
             state: Cell::new(false),
+            reverse_state: Cell::new(false),
             determined: Cell::new(false),
             queried: Cell::new(false),
             letter,
@@ -22,6 +24,7 @@ impl Fact {
     pub fn copy(&self) -> Self {
         Fact {
             state: Cell::new(self.state.get()),
+            reverse_state: Cell::new(self.reverse_state.get()),
             determined: Cell::new(self.determined.get()),
             queried: Cell::new(self.queried.get()),
             letter: self.letter,

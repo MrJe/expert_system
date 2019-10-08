@@ -45,6 +45,7 @@ fn expert_system(file: File) -> Result<Vec<Fact>, Error> {
     let facts = Facts::new();
     let mut rules = parser(file, &facts)?;
     rules.as_reverse_polish_notation()?;
+    rules.print();
     let queries = queries_of_parsed(&facts);
     let solved_queries: Vec<Fact> = solver::solve(queries, rules)?;
     Ok(solved_queries)

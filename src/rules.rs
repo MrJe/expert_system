@@ -17,11 +17,12 @@ impl<'rules> Rules<'rules> {
     pub fn set_rule(&mut self, facts: &'rules Facts, line: &str) -> Result<(), Error> {
         let mut side = Side::Lhs;
         let mut rule = Rule::new();
+        let mut is_equivalent = false;
 
         for c in line.chars() {
             if side == Side::Pending || side == Side::Bidirectional {
                 if side == Side::Bidirectional {
-                    rule.is_equivalent = true;
+                    is_equivalent = true;
                 }
                 checker::impliance(&mut side, c)?;
                 continue;
@@ -57,6 +58,12 @@ impl<'rules> Rules<'rules> {
         }
         checker::rule_composition(&rule.lhs, line)?;
         checker::rule_composition(&rule.rhs, line)?;
+        if is_equivalent {
+            let mut implicit_rule = Rule::new();
+            implicit_rule.lhs = rule.rhs.clone();
+            implicit_rule.rhs = rule.lhs.clone();
+            self.0.push(implicit_rule);
+        }
         self.0.push(rule);
         Ok(())
     }

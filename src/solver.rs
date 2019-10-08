@@ -1,11 +1,10 @@
+use std::io::Error;
 
-use std::io::{Error};
-
-use crate::print;
 use crate::facts::Fact;
-use crate::tree_builder;
 use crate::graph::{Graph, NodeIndex};
+use crate::print;
 use crate::rules::{rule::token::Token, Rules};
+use crate::tree_builder;
 
 fn get_plain_solved_queries(queries: Vec<&Fact>) -> Vec<Fact> {
     let mut solved_queries = Vec::new();

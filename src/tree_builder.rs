@@ -63,12 +63,7 @@ fn push_rec<'a>(mut graph: Graph<Token<'a>>, rules: &'a Rules, token: Token<'a>,
     }
 }
 
-pub fn generate<'a>(
-    mut graph: Graph<Token<'a>>,
-    queried: &Fact,
-    mut cur: NodeIndex,
-    rules: &'a Rules,
-) -> Result<Graph<Token<'a>>, Error> {
+pub fn generate<'a>(mut graph: Graph<Token<'a>>, queried: &Fact, mut cur: NodeIndex, rules: &'a Rules,) -> Result<Graph<Token<'a>>, Error> {
     for rule in rules.iter() {
         if rule.implies_fact(queried) {
             for token in rule.lhs.iter() {

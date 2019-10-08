@@ -14,11 +14,10 @@ pub enum Side {
 }
 
 // type Rule<'rule> = Vec<Token<'rule>>
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct Rule<'rule> {
     pub lhs: Vec<Token<'rule>>,
     pub rhs: Vec<Token<'rule>>,
-    pub is_equivalent: bool,
 }
 
 impl<'rule> Rule<'rule> {
@@ -26,14 +25,14 @@ impl<'rule> Rule<'rule> {
         Rule {
             lhs: Vec::new(),
             rhs: Vec::new(),
-            is_equivalent: false,
         }
     }
 
     pub fn as_rpn(&mut self) -> Result<(), Error> {
         self.lhs = rpn::apply_on_vec(&self.lhs)?;
-        self.lhs.reverse(); // WIP GRAPH BROWSING
+        self.lhs.reverse();
         self.rhs = rpn::apply_on_vec(&self.rhs)?;
+        self.rhs.reverse();
         Ok(())
     }
 
@@ -46,11 +45,19 @@ impl<'rule> Rule<'rule> {
     }
 
     pub fn implies_fact(&self, implied_fact: &Fact) -> bool {
+        let mut is_prev_not = false;
         for token in self.rhs.iter() {
             if let Some(fact) = token.fact {
                 if fact.letter == implied_fact.letter {
+                    if is_prev_not {
+                        fact.reverse_state.set(true);
+                    }
                     return true;
                 }
+            }
+            is_prev_not = false;
+            if let Some(op) = token.operand {
+                is_prev_not = op == Operand::Not;
             }
         }
         false
@@ -60,11 +67,7 @@ impl<'rule> Rule<'rule> {
         for token in &self.lhs {
             token.print();
         }
-        if self.is_equivalent {
-            print!("<=> ");
-        } else {
-            print!("=> ");
-        }
+        print!("=> ");
         for token in &self.rhs {
             token.print();
         }

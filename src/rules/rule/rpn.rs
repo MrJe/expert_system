@@ -36,7 +36,7 @@ fn op_priority(op: Operand) -> u8 {
     match op {
         Operand::Not => 1,
         Operand::And => 2,
-        Operand::Or  => 3,
+        Operand::Or => 3,
         Operand::Xor => 4,
         _ => 5,
     }
@@ -85,7 +85,8 @@ fn sort_operand(ret: &mut Vec<Token>, tmp: &mut Vec<Operand>, op: Operand) -> Re
         unstack_to_opening(ret, tmp)?;
         return Ok(());
     }
-    if op != Operand::Opening && op != Operand::Not
+    if op != Operand::Opening
+        && op != Operand::Not
         && !tmp.is_empty()
         && op_priority(op) >= op_priority(*tmp.last().unwrap())
     {
