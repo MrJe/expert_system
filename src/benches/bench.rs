@@ -3,12 +3,17 @@ extern crate test;
 
 mod tests {
     #[bench]
-    fn bench_ep(b: &mut test::Bencher) {
-        b.iter(|| lib::expert_system::run("graph_files/graph08"));
+    fn most_basic(b: &mut test::Bencher) {
+        b.iter(|| lib::expert_system::run("graph_files/graph00"));
     }
 
     #[bench]
-    fn bench_ep_refactored(b: &mut test::Bencher) {
-        b.iter(|| lib::expert_system_refactored::run("graph_files/graph08"));
+    fn chain_one(b: &mut test::Bencher) {
+        b.iter(|| lib::expert_system::run("graph_files/graph09"));
+    }
+
+    #[bench]
+    fn hard_one(b: &mut test::Bencher) {
+        b.iter(|| lib::expert_system::run("graph_files/graph07"));
     }
 }
