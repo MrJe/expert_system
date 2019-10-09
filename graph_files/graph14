@@ -1,8 +1,7 @@
 A + B => X
-B => S
-D => B
-C => B
+C + D => B
+X + E => D
 
-=ACS
+=CD
 
-?XSB
+?X

@@ -52,7 +52,10 @@ pub fn tree_solver(graph: &Graph<Token>, cur: NodeIndex) -> Result<bool, Error> 
                     }
                 }
             }
-            Err(Error::new(ErrorKind::InvalidData, "Tree solver: empty token"))
+            Err(Error::new(
+                ErrorKind::InvalidData,
+                "Tree solver: empty token",
+            ))
         }
         None => panic!("Error: print_tree_rec() out of bounds."),
     }
@@ -62,7 +65,9 @@ pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
     for fact in queries.iter() {
         let mut graph: Graph<Token> = Graph::new();
         let root: NodeIndex = graph.add_query(Token::new_fact(&fact));
-        graph = tree_builder::generate(graph, &rules, fact, root)?;
+        if !fact.determined.get() {
+            graph = tree_builder::generate(graph, &rules, fact, root)?;
+        }
         print::tree_to_file(&graph);
     }
     // checker::solved_queries(&facts)?;

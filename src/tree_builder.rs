@@ -78,7 +78,10 @@ fn push_rec<'a>(
             }
             Ok(graph)
         }
-        None => Err(Error::new(ErrorKind::NotFound, "Tree builder: no current node to push operand"))
+        None => Err(Error::new(
+            ErrorKind::NotFound,
+            "Tree builder: no current node to push operand",
+        )),
     }
 }
 
@@ -94,6 +97,7 @@ pub fn generate<'a>(
             if let Some(mut false_node) = graph.get_mut(saved_len) {
                 false_node.lhs = None;
                 graph.truncate(saved_len + 1);
+                cur = saved_len;
             }
             for token in rule.lhs.iter() {
                 let token = *token;
