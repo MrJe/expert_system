@@ -9,10 +9,10 @@ fn main() {
         let arg = &args[i];
         match arg.chars().next() {
             Some('-') => options.load(arg),
-            _         => {
+            _ => {
                 lib::expert_system::run(arg, &options);
                 launched += 1;
-            },
+            }
         }
         i += 1;
     }

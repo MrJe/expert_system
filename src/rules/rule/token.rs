@@ -71,10 +71,10 @@ impl<'a> Token<'a> {
     pub fn get_op_char(&self) -> char {
         if let Some(op) = self.operand {
             return match op {
-                Operand::Not     => '!',
-                Operand::And     => '+',
-                Operand::Or      => '|',
-                Operand::Xor     => '^',
+                Operand::Not => '!',
+                Operand::And => '+',
+                Operand::Or => '|',
+                Operand::Xor => '^',
                 Operand::Opening => '(',
                 Operand::Closing => ')',
             };

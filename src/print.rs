@@ -47,14 +47,14 @@ fn print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
             if cur > 0 {
                 spaces += 5;
             }
-            if node.lhs.is_some() {
-                print_tree_rec(graph, node.lhs.unwrap(), spaces);
-                if node.rhs.is_some() {
+            if let Some(lhs) = node.lhs {
+                print_tree_rec(graph, lhs, spaces);
+                if let Some(rhs) = node.rhs {
                     print!("{:<1$}-> ", "", spaces);
-                    print_tree_rec(graph, node.rhs.unwrap(), spaces);
+                    print_tree_rec(graph, rhs, spaces);
                 }
-            } else if node.content.is_fact() {
-                println!("{}", node.content.get_state());
+            } else if let Some(fact) = node.content.fact {
+                println!("{}", fact.state.get());
             } else {
                 println!("Error: last node isn't a fact.");
             }

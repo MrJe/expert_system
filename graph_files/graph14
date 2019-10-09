@@ -1,0 +1,8 @@
+A + B => X
+B => S
+D => B
+C => B
+
+=ACS
+
+?XSB

@@ -1,10 +1,10 @@
 // const OUTPUT_FILE: &str = "RESULT.txt";
 
 use crate::facts::{Fact, Facts};
+use crate::options::Options;
 use crate::print;
 use crate::rules::Rules;
 use crate::solver;
-use crate::options::Options;
 
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};

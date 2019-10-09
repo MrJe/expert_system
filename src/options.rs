@@ -1,3 +1,4 @@
+#[derive(Default)]
 pub struct Options {
     pub graph: bool,
     pub interactive: bool,
@@ -19,7 +20,7 @@ impl Options {
                 'g' => self.graph = true,
                 'i' => self.interactive = true,
                 'r' => self.reasoning = true,
-                _   => continue,
+                _ => continue,
             }
         }
     }

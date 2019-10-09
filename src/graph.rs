@@ -1,4 +1,4 @@
-use core::slice::Iter;
+use core::slice::{Iter, IterMut};
 use std::io::{Error, ErrorKind};
 
 pub type NodeIndex = usize;
@@ -104,6 +104,34 @@ impl<T> Graph<T> {
         ))
     }
 
+    pub fn append(&mut self, to_append: &mut Graph<T>, parent_node_index: NodeIndex) {
+        let offset = self.len();
+        println!("Append: offset = {}, {}", offset, parent_node_index);
+        for node in to_append.iter_mut() {
+            if let Some(index) = node.lhs.as_mut() {
+                print!("lhs: new={}, old={}\t", *index + offset, *index);
+                *index += offset;
+            }
+            if let Some(index) = node.rhs.as_mut() {
+                print!("rhs: new={}, old={}\t", *index + offset, *index);
+                *index += offset;
+            }
+            if let Some(index) = node.parent.as_mut() {
+                print!("parent: new={}, old={}\t", *index + offset, *index);
+                *index += offset;
+            } else if node.parent.is_none() && parent_node_index > 0 {
+                if let Some(parent) = self.get(parent_node_index) {
+                    if let Some(grandpa_index) = parent.parent {
+                        node.parent = Some(grandpa_index);
+                    }
+                }
+            }
+            // println!();
+            // println!("{}, {}, {}", node.lhs.unwrap(), node.rhs.unwrap(), node.parent.unwrap());
+        }
+        self.0.append(&mut to_append.0);
+    }
+
     pub fn get(&self, key: NodeIndex) -> Option<&Node<T>> {
         self.0.get(key)
     }
@@ -116,11 +144,19 @@ impl<T> Graph<T> {
         self.0.iter()
     }
 
+    pub fn iter_mut(&mut self) -> IterMut<Node<T>> {
+        self.0.iter_mut()
+    }
+
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    pub fn truncate(&mut self, new_size: usize) {
+        self.0.truncate(new_size);
     }
 }
