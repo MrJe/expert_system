@@ -6,3 +6,4 @@ pub mod print;
 pub mod rules;
 pub mod solver;
 pub mod tree_builder;
+pub mod options;

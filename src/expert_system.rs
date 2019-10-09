@@ -4,6 +4,7 @@ use crate::facts::{Fact, Facts};
 use crate::print;
 use crate::rules::Rules;
 use crate::solver;
+use crate::options::Options;
 
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
@@ -64,7 +65,7 @@ fn expert_system_wrapper(file: File) {
     }
 }
 
-pub fn run(filename: &str) {
+pub fn run(filename: &str, _options: &Options) {
     if Path::new(filename).is_dir() {
         println!("open: {}: Is a directory", filename);
     } else {
