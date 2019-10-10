@@ -31,10 +31,10 @@ pub fn solved_to_file(fname: &str, solved_queries: &[Fact]) -> Result<(), Error>
         }
     }
     f.write_all(fcontents.as_bytes())?;
-    // println!(
-    //     "The output result has been printed in the following file : {}",
-    //     fname
-    // );
+    println!(
+        "The output result has been printed in the following file : {}",
+        fname
+    );
     Ok(())
 }
 
@@ -64,4 +64,5 @@ fn print_tree_rec(graph: &Graph<Token>, cur: NodeIndex, mut spaces: usize) {
 
 pub fn tree_to_file(graph: &Graph<Token>) {
     print_tree_rec(graph, 0, 2);
+    println!();
 }

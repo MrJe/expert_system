@@ -46,10 +46,12 @@ fn expert_system(file: File) -> Result<Vec<Fact>, Error> {
     let facts = Facts::new();
     let mut rules = parser(file, &facts)?;
     rules.as_reverse_polish_notation()?;
-    rules.print();
     let queries = queries_of_parsed(&facts);
-    if queries.len() == 0 {
-        return Err(Error::new(ErrorKind::InvalidData, "No queries provided, tho nothing to solve"))
+    if queries.is_empty() {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "No queries provided, tho nothing to solve",
+        ));
     }
     let solved_queries: Vec<Fact> = solver::solve(queries, rules)?;
     Ok(solved_queries)

@@ -105,7 +105,6 @@ impl Facts {
                     }
                     fact.state.set(true);
                     fact.determined.set(true);
-                    println!("{} set to `true`", fact.letter);
                 }
                 '#' => break,
                 _ => {
