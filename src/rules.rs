@@ -15,7 +15,12 @@ impl<'rules> Rules<'rules> {
         Rules(Vec::new())
     }
 
-    pub fn set_rule(&mut self, facts: &'rules Facts, line: &str, options: &Options) -> Result<(), Error> {
+    pub fn set_rule(
+        &mut self,
+        facts: &'rules Facts,
+        line: &str,
+        options: &Options,
+    ) -> Result<(), Error> {
         let mut side = Side::Lhs;
         let mut rule = Rule::new();
         let mut is_equivalent = false;
@@ -44,7 +49,7 @@ impl<'rules> Rules<'rules> {
                         if options.comment && !options.file {
                             println!("{}", line);
                         }
-                        break
+                        break;
                     }
                     '<' | '=' => checker::impliance(&mut side, c)?,
                     _ => {

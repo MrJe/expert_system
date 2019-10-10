@@ -45,7 +45,7 @@ fn push_fact<'a>(
             Err(e) => {
                 if e.kind() == ErrorKind::NotFound {
                     println!("WTF, {:?}", e);
-                    return Err(e)
+                    return Err(e);
                 }
                 fact.state.set(false);
             }
@@ -87,7 +87,7 @@ fn push_rec<'a>(
                         return Err(Error::new(
                             ErrorKind::NotFound,
                             "Tree builder: no parent node found",
-                        ))
+                        ));
                     }
                 }
             }

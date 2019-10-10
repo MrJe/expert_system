@@ -14,7 +14,7 @@ fn is_interactive(c: char, line: String, options: &Options) -> Result<String, Er
         std::io::stdout().flush()?;
         let mut buffer = String::new();
         std::io::stdin().read_line(&mut buffer)?;
-        return Ok(buffer)
+        return Ok(buffer);
     }
     Ok(line)
 }
@@ -65,7 +65,10 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
         }
     }
     if !has_initial_facts {
-        return Err(Error::new(ErrorKind::InvalidData, "Parser: no initial fact"))
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "Parser: no initial fact",
+        ));
     }
     Ok(rules)
 }
@@ -101,7 +104,9 @@ fn expert_system_wrapper(file: File, options: &Options) {
             print::results(&solved_queries);
             if options.log {
                 match print::solved_to_file("log", &solved_queries) {
-                    Ok(_)      => println!("The output result has been printed in the following file : log"),
+                    Ok(_) => {
+                        println!("The output result has been printed in the following file : log")
+                    }
                     Err(error) => eprintln!("Error: {:?}", error.to_string()),
                 }
             }

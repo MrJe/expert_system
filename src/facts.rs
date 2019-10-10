@@ -1,6 +1,6 @@
+use crate::options::Options;
 use std::cell::Cell;
 use std::io::{Error, ErrorKind};
-use crate::options::Options;
 
 #[derive(Clone, Debug, Default)]
 pub struct Fact {
@@ -93,7 +93,7 @@ impl Facts {
 
     pub fn set_initial_facts(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
-        if !options.interactive || options.file  || options.comment {
+        if !options.interactive || options.file || options.comment {
             chars.next();
         }
         for c in chars {
@@ -101,7 +101,10 @@ impl Facts {
                 continue;
             }
             if c == '>' {
-                return Err(Error::new(ErrorKind::InvalidData, "Parser: empty expression found"));
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "Parser: empty expression found",
+                ));
             }
             match c {
                 'A'..='Z' => {
@@ -116,7 +119,7 @@ impl Facts {
                     if options.comment && !options.file {
                         println!("{}", line);
                     }
-                    break
+                    break;
                 }
                 _ => {
                     return Err(Error::new(
@@ -131,7 +134,7 @@ impl Facts {
 
     pub fn set_queries(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
-        if !options.interactive || options.file  || options.comment {
+        if !options.interactive || options.file || options.comment {
             chars.next();
         }
         for c in chars {
@@ -150,7 +153,7 @@ impl Facts {
                     if options.comment && !options.file {
                         println!("{}", line);
                     }
-                    break
+                    break;
                 }
                 _ => {
                     return Err(Error::new(
