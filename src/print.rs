@@ -10,9 +10,9 @@ pub fn results(solved_queries: &[Fact]) {
     for fact in solved_queries.iter() {
         print!("{}", fact.letter);
         if fact.state.get() {
-            println!(" = TRUE");
+            println!(" = True");
         } else {
-            println!(" = FALSE");
+            println!(" = False");
         }
     }
 }
@@ -24,9 +24,9 @@ pub fn solved_to_file(fname: &str, solved_queries: &[Fact]) -> Result<(), Error>
         if fact.queried.get() {
             fcontents.push(fact.letter);
             if fact.state.get() {
-                fcontents.push_str(" = TRUE\n");
+                fcontents.push_str(" = True\n");
             } else {
-                fcontents.push_str(" = FALSE\n");
+                fcontents.push_str(" = False\n");
             }
         }
     }

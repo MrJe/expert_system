@@ -17,10 +17,12 @@ fn main() {
         i += 1;
     }
     if launched == 0 {
-        println!("usage: ./expert_system [-gri] [input_file ...]");
+        println!("usage: ./expert_system [-grif] [input_file ...]");
         println!("       -g : print ascii graph");
         println!("       -r : reasoning visualisation");
-        println!("       -i : interactive fact validation\n");
+        println!("       -i : interactive fact validation");
+        println!("       -f : print file");
+        println!("       -c : print only comments (only if -f inactive)\n");
         println!("       cargo run [-- -gri] input_file ...");
         println!("       note: '--' allow cargo to load options");
     }

@@ -16,6 +16,8 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
     let mut has_initial_facts = false;
     if options.file {
         println!("=== FILE ===");
+    } else if options.comment {
+        println!("=== COMMENT ===");
     }
     for line in reader.lines() {
         if let Ok(line) = line {
@@ -23,13 +25,18 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
                 println!("{}", line);
             }
             match line.trim().chars().next() {
-                Some('A'..='Z') | Some('(') | Some('!') => rules.set_rule(&facts, &line)?,
+                Some('A'..='Z') | Some('(') | Some('!') => rules.set_rule(&facts, &line, options)?,
                 Some('=') => {
-                    facts.set_initial_facts(&line)?;
+                    facts.set_initial_facts(&line, options)?;
                     has_initial_facts = true;
                 }
-                Some('?') => facts.set_queries(&line)?,
-                Some('#') | None => continue,
+                Some('?') => facts.set_queries(&line, options)?,
+                Some('#') => {
+                    if options.comment && !options.file {
+                        println!("{}", line);
+                    }
+                }
+                None => continue,
                 _ => {
                     return Err(Error::new(
                         ErrorKind::InvalidData,

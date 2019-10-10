@@ -2,6 +2,7 @@ pub mod rule;
 
 use crate::checker;
 use crate::facts::Facts;
+use crate::options::Options;
 use core::slice::Iter;
 use rule::{token::Operand, Rule, Side};
 use std::io::{Error, ErrorKind};
@@ -14,7 +15,7 @@ impl<'rules> Rules<'rules> {
         Rules(Vec::new())
     }
 
-    pub fn set_rule(&mut self, facts: &'rules Facts, line: &str) -> Result<(), Error> {
+    pub fn set_rule(&mut self, facts: &'rules Facts, line: &str, options: &Options) -> Result<(), Error> {
         let mut side = Side::Lhs;
         let mut rule = Rule::new();
         let mut is_equivalent = false;
@@ -39,7 +40,12 @@ impl<'rules> Rules<'rules> {
                     '|' => rule.push(side, Some(Operand::Or), None),
                     '^' => rule.push(side, Some(Operand::Xor), None),
                     '+' => rule.push(side, Some(Operand::And), None),
-                    '#' => break,
+                    '#' => {
+                        if options.comment && !options.file {
+                            println!("{}", line);
+                        }
+                        break
+                    }
                     '<' | '=' => checker::impliance(&mut side, c)?,
                     _ => {
                         return Err(Error::new(

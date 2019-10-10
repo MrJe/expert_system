@@ -1,5 +1,6 @@
 use std::cell::Cell;
 use std::io::{Error, ErrorKind};
+use crate::options::Options;
 
 #[derive(Clone, Debug, Default)]
 pub struct Fact {
@@ -90,7 +91,7 @@ impl Facts {
         &self.fact_arr[self.get_index(letter)]
     }
 
-    pub fn set_initial_facts(&self, line: &str) -> Result<(), Error> {
+    pub fn set_initial_facts(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
         chars.next();
         for c in chars {
@@ -109,7 +110,12 @@ impl Facts {
                     fact.state.set(true);
                     fact.determined.set(true);
                 }
-                '#' => break,
+                '#' => {
+                    if options.comment && !options.file {
+                        println!("{}", line);
+                    }
+                    break
+                }
                 _ => {
                     return Err(Error::new(
                         ErrorKind::InvalidData,
@@ -121,7 +127,7 @@ impl Facts {
         Ok(())
     }
 
-    pub fn set_queries(&self, line: &str) -> Result<(), Error> {
+    pub fn set_queries(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
         chars.next();
         for c in chars {
@@ -136,7 +142,12 @@ impl Facts {
                     }
                     fact.queried.set(true);
                 }
-                '#' => break,
+                '#' => {
+                    if options.comment && !options.file {
+                        println!("{}", line);
+                    }
+                    break
+                }
                 _ => {
                     return Err(Error::new(
                         ErrorKind::InvalidData,

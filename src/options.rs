@@ -4,6 +4,7 @@ pub struct Options {
     pub interactive: bool,
     pub reasoning: bool,
     pub file: bool,
+    pub comment: bool,
 }
 
 impl Options {
@@ -13,6 +14,7 @@ impl Options {
             interactive: false,
             reasoning: false,
             file: false,
+            comment: false,
         }
     }
 
@@ -23,6 +25,7 @@ impl Options {
                 'i' => self.interactive = true,
                 'r' => self.reasoning = true,
                 'f' => self.file = true,
+                'c' => self.comment = true,
                 _ => continue,
             }
         }
