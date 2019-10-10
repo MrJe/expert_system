@@ -13,6 +13,7 @@ use std::path::Path;
 fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'a>, Error> {
     let reader = BufReader::new(file);
     let mut rules = Rules::new();
+    let mut has_initial_facts = false;
     if options.file {
         println!("=== FILE ===");
     }
@@ -23,7 +24,10 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
             }
             match line.trim().chars().next() {
                 Some('A'..='Z') | Some('(') | Some('!') => rules.set_rule(&facts, &line)?,
-                Some('=') => facts.set_initial_facts(&line)?,
+                Some('=') => {
+                    facts.set_initial_facts(&line)?;
+                    has_initial_facts = true;
+                }
                 Some('?') => facts.set_queries(&line)?,
                 Some('#') | None => continue,
                 _ => {
@@ -34,6 +38,9 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
                 }
             }
         }
+    }
+    if !has_initial_facts {
+        return Err(Error::new(ErrorKind::InvalidData, "Parser: no initial fact"))
     }
     Ok(rules)
 }
