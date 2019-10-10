@@ -93,7 +93,9 @@ impl Facts {
 
     pub fn set_initial_facts(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
-        chars.next();
+        if !options.interactive || options.file  || options.comment {
+            chars.next();
+        }
         for c in chars {
             if c.is_whitespace() {
                 continue;
@@ -129,7 +131,9 @@ impl Facts {
 
     pub fn set_queries(&self, line: &str, options: &Options) -> Result<(), Error> {
         let mut chars = line.chars();
-        chars.next();
+        if !options.interactive || options.file  || options.comment {
+            chars.next();
+        }
         for c in chars {
             if c.is_whitespace() {
                 continue;

@@ -1,5 +1,3 @@
-// const OUTPUT_FILE: &str = "RESULT.txt";
-
 use crate::facts::{Fact, Facts};
 use crate::options::Options;
 use crate::print;
@@ -9,6 +7,17 @@ use crate::solver;
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Error, ErrorKind};
 use std::path::Path;
+
+fn is_interactive(c: char, line: String, options: &Options) -> Result<String, Error> {
+    if options.interactive && !options.file && !options.comment {
+        print!("{}", c);
+        std::io::stdout().flush()?;
+        let mut buffer = String::new();
+        std::io::stdin().read_line(&mut buffer)?;
+        return Ok(buffer)
+    }
+    Ok(line)
+}
 
 fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'a>, Error> {
     let reader = BufReader::new(file);
@@ -25,12 +34,21 @@ fn parser<'a>(file: File, facts: &'a Facts, options: &Options) -> Result<Rules<'
                 println!("{}", line);
             }
             match line.trim().chars().next() {
-                Some('A'..='Z') | Some('(') | Some('!') => rules.set_rule(&facts, &line, options)?,
+                Some('A'..='Z') | Some('(') | Some('!') => {
+                    if options.interactive && !options.file && !options.comment {
+                        println!("{}", line);
+                    }
+                    rules.set_rule(&facts, &line, options)?;
+                }
                 Some('=') => {
+                    let line = is_interactive('=', line.to_string(), options)?;
                     facts.set_initial_facts(&line, options)?;
                     has_initial_facts = true;
                 }
-                Some('?') => facts.set_queries(&line, options)?,
+                Some('?') => {
+                    let line = is_interactive('?', line.to_string(), options)?;
+                    facts.set_queries(&line, options)?;
+                }
                 Some('#') => {
                     if options.comment && !options.file {
                         println!("{}", line);
@@ -80,8 +98,13 @@ fn expert_system(file: File, options: &Options) -> Result<Vec<Fact>, Error> {
 fn expert_system_wrapper(file: File, options: &Options) {
     match expert_system(file, options) {
         Ok(solved_queries) => {
-            // print::solved_to_file(OUTPUT_FILE, &solved_queries);
             print::results(&solved_queries);
+            if options.log {
+                match print::solved_to_file("log", &solved_queries) {
+                    Ok(_)      => println!("The output result has been printed in the following file : log"),
+                    Err(error) => eprintln!("Error: {:?}", error.to_string()),
+                }
+            }
         }
         Err(error) => eprintln!(
             "Oops, something went wrong, shutting program down.\nError: {:?}",

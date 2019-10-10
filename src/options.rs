@@ -2,9 +2,9 @@
 pub struct Options {
     pub graph: bool,
     pub interactive: bool,
-    pub reasoning: bool,
     pub file: bool,
     pub comment: bool,
+    pub log: bool,
 }
 
 impl Options {
@@ -12,9 +12,9 @@ impl Options {
         Options {
             graph: false,
             interactive: false,
-            reasoning: false,
             file: false,
             comment: false,
+            log: false,
         }
     }
 
@@ -23,9 +23,9 @@ impl Options {
             match c {
                 'g' => self.graph = true,
                 'i' => self.interactive = true,
-                'r' => self.reasoning = true,
                 'f' => self.file = true,
                 'c' => self.comment = true,
+                'l' => self.log = true,
                 _ => continue,
             }
         }

@@ -6,7 +6,6 @@ use std::fs::File;
 use std::io::{prelude::*, Error};
 
 pub fn results(solved_queries: &[Fact]) {
-    // println!("Everything worked as expected, here are the results:");
     for fact in solved_queries.iter() {
         print!("{}", fact.letter);
         if fact.state.get() {
@@ -31,10 +30,6 @@ pub fn solved_to_file(fname: &str, solved_queries: &[Fact]) -> Result<(), Error>
         }
     }
     f.write_all(fcontents.as_bytes())?;
-    println!(
-        "The output result has been printed in the following file : {}",
-        fname
-    );
     Ok(())
 }
 
