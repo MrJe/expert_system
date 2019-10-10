@@ -83,8 +83,8 @@ impl<'a> Token<'a> {
     }
 
     pub fn get_token_char(&self) -> char {
-        if self.is_fact() {
-            self.fact.unwrap().letter
+        if let Some(fact) = self.fact {
+            fact.letter
         } else {
             self.get_op_char()
         }

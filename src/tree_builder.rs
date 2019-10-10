@@ -44,6 +44,7 @@ fn push_fact<'a>(
             Ok(()) => graph = generate(graph, rules, fact, sub_head)?,
             Err(e) => {
                 if e.kind() == ErrorKind::NotFound {
+                    println!("WTF, {:?}", e);
                     return Err(e)
                 }
                 fact.state.set(false);
@@ -80,7 +81,14 @@ fn push_rec<'a>(
                         graph = push_fact(graph, rules, token, fact, cur, Side::Rhs)?;
                         break;
                     }
-                    node = graph.get(*cur).unwrap(); // danger
+                    if let Some(tmp) = graph.get(*cur) {
+                        node = tmp;
+                    } else {
+                        return Err(Error::new(
+                            ErrorKind::NotFound,
+                            "Tree builder: no parent node found",
+                        ))
+                    }
                 }
             }
             Ok(graph)
