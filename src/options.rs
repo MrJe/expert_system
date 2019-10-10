@@ -3,6 +3,7 @@ pub struct Options {
     pub graph: bool,
     pub interactive: bool,
     pub reasoning: bool,
+    pub file: bool,
 }
 
 impl Options {
@@ -11,6 +12,7 @@ impl Options {
             graph: false,
             interactive: false,
             reasoning: false,
+            file: false,
         }
     }
 
@@ -20,6 +22,7 @@ impl Options {
                 'g' => self.graph = true,
                 'i' => self.interactive = true,
                 'r' => self.reasoning = true,
+                'f' => self.file = true,
                 _ => continue,
             }
         }

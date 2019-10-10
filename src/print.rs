@@ -6,7 +6,7 @@ use std::fs::File;
 use std::io::{prelude::*, Error};
 
 pub fn results(solved_queries: &[Fact]) {
-    println!("Everything worked as expected, here are the results:");
+    // println!("Everything worked as expected, here are the results:");
     for fact in solved_queries.iter() {
         print!("{}", fact.letter);
         if fact.state.get() {

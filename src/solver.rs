@@ -2,6 +2,7 @@ use std::io::{Error, ErrorKind};
 
 use crate::facts::Fact;
 use crate::graph::{Graph, NodeIndex};
+use crate::options::Options;
 use crate::print;
 use crate::rules::{
     rule::token::{Operand, Token},
@@ -61,14 +62,17 @@ pub fn tree_solver(graph: &Graph<Token>, cur: NodeIndex) -> Result<bool, Error> 
     }
 }
 
-pub fn solve(queries: Vec<&Fact>, rules: Rules) -> Result<Vec<Fact>, Error> {
+pub fn solve(queries: Vec<&Fact>, rules: Rules, options: &Options) -> Result<Vec<Fact>, Error> {
     for fact in queries.iter() {
         let mut graph: Graph<Token> = Graph::new();
         let root: NodeIndex = graph.add_query(Token::new_fact(&fact));
         if !fact.determined.get() {
             graph = tree_builder::generate(graph, &rules, fact, root)?;
         }
-        print::tree_to_file(&graph);
+        if options.graph {
+            println!("=== GRAPH ===");
+            print::tree_to_file(&graph);
+        }
     }
     // checker::solved_queries(&facts)?;
     Ok(get_plain_solved_queries(queries))
