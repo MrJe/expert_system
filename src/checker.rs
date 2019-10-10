@@ -52,6 +52,12 @@ pub fn impliance(side: &mut Side, c: char) -> Result<(), Error> {
 
 pub fn rule_composition(tokens: &[Token], line: &str) -> Result<(), Error> {
     let mut last = &Token::new(None, None);
+    if tokens.is_empty() {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            format!("Rules parser: empty conclusion (at {})", line),
+        ));
+    }
     for token in tokens {
         if token.is_empty() {
             return Err(Error::new(

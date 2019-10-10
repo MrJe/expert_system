@@ -97,6 +97,9 @@ impl Facts {
             if c.is_whitespace() {
                 continue;
             }
+            if c == '>' {
+                return Err(Error::new(ErrorKind::InvalidData, "Parser: empty expression found"));
+            }
             match c {
                 'A'..='Z' => {
                     let fact = &self.fact_arr[self.get_index(c)];
