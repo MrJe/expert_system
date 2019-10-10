@@ -74,6 +74,5 @@ pub fn solve(queries: Vec<&Fact>, rules: Rules, options: &Options) -> Result<Vec
             print::tree_to_file(&graph);
         }
     }
-    // checker::solved_queries(&facts)?;
     Ok(get_plain_solved_queries(queries))
 }

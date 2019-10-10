@@ -126,8 +126,6 @@ impl<T> Graph<T> {
                     }
                 }
             }
-            // println!();
-            // println!("{}, {}, {}", node.lhs.unwrap(), node.rhs.unwrap(), node.parent.unwrap());
         }
         self.0.append(&mut to_append.0);
     }
