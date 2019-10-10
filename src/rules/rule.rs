@@ -13,7 +13,6 @@ pub enum Side {
     Bidirectional,
 }
 
-// type Rule<'rule> = Vec<Token<'rule>>
 #[derive(Default, Clone, Debug)]
 pub struct Rule<'rule> {
     pub lhs: Vec<Token<'rule>>,
