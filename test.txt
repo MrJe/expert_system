@@ -1,8 +1,0 @@
-# Comment
-A => B # Si A alors B
-
-# Hello
-=A # A est vrai
-
-# World
-?B # B Please

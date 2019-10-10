@@ -40,8 +40,15 @@ fn push_fact<'a>(
         _ => panic!("Only lhs/rhs can be pushed in a graph. Code error"),
     };
     if !fact.determined.get() {
-        checker::infinite_rule_loop(&graph, sub_head, fact)?;
-        graph = generate(graph, rules, fact, sub_head)?;
+        match checker::infinite_rule_loop(&graph, sub_head, fact) {
+            Ok(()) => graph = generate(graph, rules, fact, sub_head)?,
+            Err(e) => {
+                if e.kind() == ErrorKind::NotFound {
+                    return Err(e)
+                }
+                fact.state.set(false);
+            }
+        }
     }
     Ok(graph)
 }

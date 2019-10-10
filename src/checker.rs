@@ -100,7 +100,7 @@ pub fn infinite_rule_loop<'a>(
                     if fact.letter == ref_fact.letter {
                         return Err(Error::new(
                             ErrorKind::InvalidInput,
-                            "Tree builder (inf checker): INFINITE LOOP",
+                            "Tree builder (inf checker): infinite loop",
                         ));
                     }
                 }
