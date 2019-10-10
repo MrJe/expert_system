@@ -48,6 +48,9 @@ fn expert_system(file: File) -> Result<Vec<Fact>, Error> {
     rules.as_reverse_polish_notation()?;
     rules.print();
     let queries = queries_of_parsed(&facts);
+    if queries.len() == 0 {
+        return Err(Error::new(ErrorKind::InvalidData, "No queries provided, tho nothing to solve"))
+    }
     let solved_queries: Vec<Fact> = solver::solve(queries, rules)?;
     Ok(solved_queries)
 }
@@ -58,9 +61,9 @@ fn expert_system_wrapper(file: File) {
             // print::solved_to_file(OUTPUT_FILE, &solved_queries);
             print::results(&solved_queries);
         }
-        Err(error) => println!(
-            "Oops, something went wrong, shutting program down.\nError:\n{:#?}",
-            error
+        Err(error) => eprintln!(
+            "Oops, something went wrong, shutting program down.\nError: {:?}",
+            error.to_string()
         ),
     }
 }
@@ -71,7 +74,7 @@ pub fn run(filename: &str, _options: &Options) {
     } else {
         match File::open(filename) {
             Ok(file) => expert_system_wrapper(file),
-            Err(error) => println!("open: {}: {:#?}", filename, error),
+            Err(error) => eprintln!("open: {}: {:?}", filename, error.to_string()),
         };
     }
 }
