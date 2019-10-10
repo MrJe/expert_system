@@ -45,19 +45,21 @@ impl<'rule> Rule<'rule> {
     }
 
     pub fn implies_fact(&self, implied_fact: &Fact) -> bool {
-        let mut is_prev_not = false;
+        let mut is_not = false;
         for token in self.rhs.iter() {
             if let Some(fact) = token.fact {
                 if fact.letter == implied_fact.letter {
-                    if is_prev_not {
-                        fact.reverse_state.set(true);
-                    }
+                    fact.reverse_state.set(is_not);
                     return true;
                 }
+                is_not = false;
             }
-            is_prev_not = false;
             if let Some(op) = token.operand {
-                is_prev_not = op == Operand::Not;
+                if op == Operand::Not {
+                    is_not = !is_not;
+                } else {
+                    is_not = false;
+                }
             }
         }
         false

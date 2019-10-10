@@ -104,8 +104,8 @@ pub fn generate<'a>(
                 graph = push_rec(graph, rules, token, &mut cur)?;
             }
             let solved_branch = solver::tree_solver(&graph, saved_len)?;
-            queried.set_solved(solved_branch);
             if solved_branch {
+                queried.set_solved(solved_branch);
                 break;
             }
         }

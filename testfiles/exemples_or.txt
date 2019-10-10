@@ -1,6 +1,0 @@
-D | E => B
-G + D => F
-
-=D #result : B is True
-
-?B
