@@ -1,5 +1,6 @@
 D | E => B
-G + D <=> F
+G + D => F
+F => G + D
 
 =D #result : F is False
 
