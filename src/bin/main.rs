@@ -1,17 +1,29 @@
 fn main() {
-	let args: Vec<String> = std::env::args().collect();
-	if args.len() == 2 {
-		println!("{}", &args[1]);
-		let f = std::fs::File::open(&args[1]).unwrap();
-		let facts = lib::file::parse(&f).unwrap();
-		facts.print('A');
-		facts.print('B');
-		facts.print('C');
-		facts.print('V');
-		facts.print('X');
-		lib::file::output_result("RESULT.txt", &facts);
-	}
-	else {
-		println!("Usage: only 2 parameters !");
-	}
+    let args: Vec<String> = std::env::args().collect();
+    let nb_args = args.len();
+    let mut options = lib::options::Options::new();
+    let mut launched = 0;
+
+    let mut i = 1;
+    while i < nb_args {
+        let arg = &args[i];
+        match arg.chars().next() {
+            Some('-') => options.load(arg),
+            _ => {
+                lib::expert_system::run(arg, &options);
+                launched += 1;
+            }
+        }
+        i += 1;
+    }
+    if launched == 0 {
+        println!("usage: ./expert_system [-giflc] [input_file ...]");
+        println!("       -g : print ascii graph");
+        println!("       -i : interactive fact validation");
+        println!("       -f : print file");
+        println!("       -l : print result into log file");
+        println!("       -c : print only comments (only if -f inactive)\n");
+        println!("       cargo run [-- -giflc] input_file ...");
+        println!("       note: '--' allow cargo to load options");
+    }
 }

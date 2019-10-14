@@ -10,9 +10,10 @@ for f in os.listdir('.'):
         continue
     if f.endswith(".py"):
         continue
-    os.system("../target/debug/expert_system.py '{}' > '{}.userout'".format(f, f))
+    os.system("../../target/debug/expert_system '{}' > '{}.userout'".format(f, f))
     if os.system("diff '{}.refout' '{}.userout'".format(f, f)) != 0:
         error = True
+        print f
 os.system("rm *.userout")
 if error:
     sys.exit(1)
